@@ -7,10 +7,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel Billdesk Implementation') }}</title>
-    {{-- @billdesksdk() --}}
-    <script type='module' src='https://uat.billdesk.com/jssdk/v1/dist/billdesksdk/billdesksdk.esm.js'></script>
-    <script nomodule='' src='https://uat.billdesk.com/jssdk/v1/dist/billdesksdk.js'></script>
-    <link href='https://uat.billdesk.com/jssdk/v1/dist/billdesksdk/billdesksdk.css' rel='stylesheet'>
+    
+    @billdesksdk()
+    
 </head>
 
 <body>
@@ -21,11 +20,11 @@
             merchantId: "{{ config('billdesk.merchant_id') }}",
             bdOrderId: "{{ $request['bdOrderId'] }}",
             authToken: "{{ $request['authToken'] }}",
-            childWindow: true,
-            returnUrl: "{{ $request['response_url'] }}",
-            retryCount: 3
+            childWindow: {{ config('billdesk.child_window') }},
+            returnUrl: "{{ (!config('billdesk.child_window')) ? $request['response_url'] : '<html><head><title>Billdesk</title></head><body onload=\"window.close();\"></body></html>' }}",
+            retryCount: {{ config('billdesk.retry_count') }}
         }
-
+        
         var responseHandler = function(txn) {
             console.log("callback received status:: ", txn.status)
             console.log("callback received response:: ", txn.response)

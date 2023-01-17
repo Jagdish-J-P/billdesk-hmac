@@ -147,8 +147,8 @@ class Message
         $this->jwsVerifier   = new JWSVerifier($this->signAlgoManager);
         $this->jwsSerializer = new CompactSerializer();
 
-        $this->item_code    = 'DIRECT';
-        $this->ResponseUrl  = Config::get('billdesk.response_url');
+        $this->item_code    = config('billdesk.item_code');
+        $this->ResponseUrl  = config('billdesk.response_url');
         
     }
 

@@ -35,6 +35,7 @@ class CreateOrder extends Message implements Contract
      */
     public function handle($options)
     {
+      
         //todo: create order api
         $data = Validator::make($options, [
             'reference_id'    => 'nullable',
@@ -43,12 +44,15 @@ class CreateOrder extends Message implements Contract
             'invoice'         => 'nullable',
             'mandate'         => 'nullable',
             'order_date'      => 'nullable',
-            'remark'          => 'nullable',
             'debit_day'       => 'nullable',
             'settlement_lob'  => 'nullable',
             'amount'          => 'required',
         ])->validate();
 
+        $data['mandate']['mercid']              = $this->merchantId;
+        $data['mandate']['currency']            = $this->currency;
+        $data['mandate']['subscription_refid']  = $this->generate_uuid();
+        $data['mandate']['debit_day']           = $data['debit_day'] ?? config('billdesk.debit_day');
 
         $this->responseFormat       = $data['response_format'] ?? 'HTML';
         $this->reference            = $data['reference_id'] ?? $this->generate_uuid();
@@ -63,7 +67,8 @@ class CreateOrder extends Message implements Contract
         $this->recurrence_rule      = $data['recurrence_rule'] ?? config('billdesk.recurrence_rule');
         $this->debit_day            = $data['debit_day'] ?? config('billdesk.debit_day');
         $this->mandate_required     = $data['mandate_required'] ?? 'N';
-        $this->payload               = $this->format();
+
+        $this->payload              = $this->format();
 
         $this->saveTransaction();
 

@@ -73,6 +73,15 @@ return [
     
     // Recurrence Rule
     'recurrence_rule' => 'on',
+    
+    // Item Code
+    'item_code' => env('BILLDESK_ITEM_CODE', 'DIRECT'),
+    
+    // Child Window
+    'child_window' => env('BILLDESK_CHILD_WINDOW', false),
+    
+    // Retry Count
+    'retry_count' => env('BILLDESK_RETRY_COUNT', 3),
 
     /*
      * The Default Currency

@@ -14,7 +14,7 @@
     <nav class="navbar navbar-light bg-light">
         <div class="container">
             <a class="navbar-brand" href="./">
-                <img src="assets/img/logo.png" alt="" width="100%" height="100%">
+                <img src="{{ url(config('billdesk.merchant_logo')) }}" alt="" width="180px" />
             </a>
         </div>
     </nav>
@@ -26,73 +26,75 @@
                         <label>Nature of Payment <span class="requiredfild">*</span> </label>
                         <div class="form-check form-check-inline">
                             <input type="radio" class="form-check-input" id="validationFormCheck2"
-                                name="paymentnature" value="otp" required checked>
+                                name="mandate_required" value="N" required checked>
                             <label class="form-check-label" for="validationFormCheck2">One Time Payment</label>
                         </div>
                         <div class="form-check form-check-inline mb-3">
                             <input type="radio" class="form-check-input" id="validationFormCheck3"
-                                name="paymentnature" value="si" required>
+                                name="mandate_required" value="Y" required>
                             <label class="form-check-label" for="validationFormCheck3">Standing Instructions
                                 (SI)</label>
                             <div class="invalid-feedback">More example invalid feedback text</div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="otp box" style="display: block;">
-                            <form class="form-control" method="POST"
-                                action="{{ route('billdesk.payment.auth.request') }}">
-                                @csrf
+                        <form class="form-control" method="POST" action="{{ route('billdesk.payment.auth.request') }}">
+                            @csrf
+                            <div class="row">
+
+                                <div class="col-lg-6 mb-4">
+                                    <label for="first_name" class="form-label">First Name <span
+                                            class="requiredfild">*</span></label>
+                                    <input type="text" class="form-control" id="first_name"
+                                        name="additional_info[additional_info1]" placeholder="First Name" required>
+                                </div>
+                                <div class="col-lg-6 mb-4">
+                                    <label for="last_name" class="form-label">Last Name <span
+                                            class="requiredfild">*</span></label>
+                                    <input type="text" class="form-control" id="last_name"
+                                        name="additional_info[additional_info2]" placeholder="Last Name" required>
+                                </div>
+
+                                <div class="col-lg-6 mb-4">
+                                    <label for="email" class="form-label">Email <span
+                                            class="requiredfild">*</span></label>
+                                    <input type="text" class="form-control" id="email" placeholder="Email"
+                                        name="additional_info[additional_info3]" required>
+                                </div>
+                                <div class="col-lg-6 mb-4">
+                                    <label for="mobile_number" class="form-label">Mobile Number <span
+                                            class="requiredfild">*</span></label>
+                                    <input type="number" class="form-control" id="mobile_number"
+                                        name="additional_info[additional_info4]" placeholder="Mobile Number" required>
+                                </div>
+                                <div class="col-lg-6 mb-4">
+                                    <label for="city" class="form-label">City <span
+                                            class="requiredfild">*</span></label>
+                                    <input type="text" class="form-control" id="city" placeholder="City"
+                                        name="additional_info[additional_info5]" required>
+                                </div>
+                                <div class="col-lg-6 mb-4">
+                                    <label for="sales_executive" class="form-label">Sales Executive <span
+                                            class="requiredfild">*</span></label>
+                                    <input type="text" class="form-control" id="sales_executive"
+                                        name="additional_info[additional_info6]" placeholder="Sales Executive" required>
+                                </div>
+                                <div class="col-lg-6 mb-4">
+                                    <label for="member_id" class="form-label">Member ID</label>
+                                    <input type="text" class="form-control" id="member_id"
+                                        name="additional_info[additional_info7]" placeholder="Member ID">
+                                </div>
+                            </div>
+                            <div class="N box" style="display: block;">
                                 <div class="row">
-
-                                    <div class="col-lg-6 mb-4">
-                                        <label for="first_name" class="form-label">First Name <span
-                                                class="requiredfild">*</span></label>
-                                        <input type="text" class="form-control" id="first_name" name="additional_info[additional_info1]"
-                                            placeholder="First Name" required>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <label for="last_name" class="form-label">Last Name <span
-                                                class="requiredfild">*</span></label>
-                                        <input type="text" class="form-control" id="last_name" name="additional_info[additional_info2]"
-                                            placeholder="Last Name" required>
-                                    </div>
-
-                                    <div class="col-lg-6 mb-4">
-                                        <label for="email" class="form-label">Email <span
-                                                class="requiredfild">*</span></label>
-                                        <input type="text" class="form-control" id="email" placeholder="Email" name="additional_info[additional_info3]"
-                                            required>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <label for="mobile_number" class="form-label">Mobile Number <span
-                                                class="requiredfild">*</span></label>
-                                        <input type="number" class="form-control" id="mobile_number" name="additional_info[additional_info4]"
-                                            placeholder="Mobile Number" required>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <label for="city" class="form-label">City <span
-                                                class="requiredfild">*</span></label>
-                                        <input type="text" class="form-control" id="city" placeholder="City" name="additional_info[additional_info5]"
-                                            required>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <label for="sales_executive" class="form-label">Sales Executive <span
-                                                class="requiredfild">*</span></label>
-                                        <input type="text" class="form-control" id="sales_executive" name="additional_info[additional_info6]"
-                                            placeholder="Sales Executive" required>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <label for="member_id" class="form-label">Member ID</label>
-                                        <input type="text" class="form-control" id="member_id" name="additional_info[additional_info7]"
-                                            placeholder="Member ID">
-                                    </div>
 
                                     <div class="subscr">
                                         <h3 class="payheader">Amount Summary</h3>
                                     </div>
                                     <div class="col-lg-6 mb-4">
                                         <label for="np" class="form-label">Nature of Payment</label>
-                                        <select id="np" class="form-select" name="additional_info[additional_info8]"
+                                        <select id="np" class="form-select"
+                                            name="additional_info[additional_info8]"
                                             aria-label="Default select example">
                                             <option selected>Nature of Payment</option>
                                             <option value="1">DP</option>
@@ -104,12 +106,13 @@
                                         <label for="amount" class="form-label">Amount <span
                                                 class="requiredfild">*</span></label>
                                         <input type="number" class="form-control" id="amount" name="amount"
-                                            placeholder="Amount" required>
+                                            placeholder="Amount" >
                                     </div>
 
                                     <div class="col-lg-12 pb-1">
                                         <label for="remarks">Remarks (Optional)</label>
-                                        <textarea class="form-control" placeholder="Remarks (Optional)" id="remarks"  name="additional_info[additional_info9]" style="height: 100px"></textarea>
+                                        <textarea class="form-control" placeholder="Remarks (Optional)" id="remarks"
+                                            name="additional_info[additional_info9]" style="height: 100px"></textarea>
                                     </div>
 
                                     <div class="text-center mt-3 mb-3">
@@ -117,83 +120,38 @@
                                     </div>
 
                                 </div>
-                            </form>
-                        </div>
+                            </div>
+                            <div class="Y box">
 
-                        <div class="si box">
-                            <form class="form-control" method="POST"
-                                action="{{ route('billdesk.payment.auth.request') }}">
-                                @csrf
                                 <div class="row">
-
-                                    <div class="col-lg-6 mb-4">
-                                        <label for="first_name" class="form-label">First Name <span
-                                                class="requiredfild">*</span></label>
-                                        <input type="text" class="form-control" id="first_name"
-                                            placeholder="First Name" required>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <label for="last_name" class="form-label">Last Name <span
-                                                class="requiredfild">*</span></label>
-                                        <input type="text" class="form-control" id="last_name"
-                                            placeholder="Last Name" required>
-                                    </div>
-
-                                    <div class="col-lg-6 mb-4">
-                                        <label for="email" class="form-label">Email <span
-                                                class="requiredfild">*</span></label>
-                                        <input type="text" class="form-control" id="email"
-                                            placeholder="Email" required>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <label for="mobile_number" class="form-label">Mobile Number <span
-                                                class="requiredfild">*</span></label>
-                                        <input type="text" class="form-control" id="mobile_number"
-                                            placeholder="Mobile Number" required>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <label for="city" class="form-label">City <span
-                                                class="requiredfild">*</span></label>
-                                        <input type="text" class="form-control" id="city" placeholder="City"
-                                            required>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <label for="sales_executive" class="form-label">Sales Executive <span
-                                                class="requiredfild">*</span></label>
-                                        <input type="text" class="form-control" id="sales_executive"
-                                            placeholder="Sales Executive" required>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <label for="member_id" class="form-label">Member ID</label>
-                                        <input type="text" class="form-control" id="member_id"
-                                            placeholder="Member ID">
-                                    </div>
-
                                     <div class="subscr">
                                         <h3 class="payheader">Subscription Summary</h3>
                                     </div>
                                     <div class="col-lg-3 pb-1">
                                         <label for="frequency" class="form-label">Frequency</label>
-                                        <input type="text" class="form-control" id="frequency"
-                                            placeholder="Frequency" value="Monthly" required disabled>
+                                        <input type="text" class="form-control" id="frequency" name="mandate[frequency]"
+                                            placeholder="Frequency" value="monthly" required disabled>
                                     </div>
                                     <div class="col-lg-3 pb-1">
                                         <label for="duration" class="form-label">Duration <span
                                                 class="requiredfild">*</span></label>
                                         <input type="number" class="form-control" id="duration"
-                                            placeholder="Duration" value="6" required>
+                                            placeholder="Duration" value="6" >
                                     </div>
                                     <div class="col-lg-3 pb-1">
                                         <label for="start_date" class="form-label">Start Date <span
                                                 class="requiredfild">*</span></label>
-                                        <input type="date" class="form-control" id="start_date"
-                                            placeholder="Start Date" required>
+                                        <input type="date" class="form-control" id="start_date" name="mandate[start_date]"
+                                            placeholder="Start Date" >
                                     </div>
                                     <div class="col-lg-3 pb-1">
                                         <label for="end_date" class="form-label">End Date <span
                                                 class="requiredfild">*</span></label>
-                                        <input type="date" class="form-control" id="end_date"
-                                            placeholder="End Date" required>
+                                        <input type="date" class="form-control" id="end_date" name="mandate[end_date]"
+                                            placeholder="End Date" >
+                                        <input type="hidden" name="mandate[amount_type]" value="max" />
+                                        <input type="hidden" name="mandate[recurrence_rule]" value="on" />
+                                        <input type="hidden" name="mandate[debit_day]" value="6" />
                                     </div>
                                     <div class="subscr">
                                         <h3 class="payheader">Amount Summary</h3>
@@ -202,22 +160,22 @@
                                         <label for="frequency" class="form-label">Down Payment Amount</label>
                                         <div class="input-group">
                                             <span class="input-group-text" id="basic-addon1">INR</span>
-                                            <input type="text" class="form-control" id="frequency"
-                                                placeholder="Frequency" value="1.00" required disabled>
+                                            <input type="text" class="form-control" id="amount" name="amount"
+                                                placeholder="Frequency" value="1.00"  disabled>
                                         </div>
                                     </div>
                                     <div class="col-lg-4 pb-1">
                                         <label for="duration" class="form-label">Subscription Amount <span
                                                 class="requiredfild">*</span></label>
                                         <div class="input-group">
-                                            <input type="number" class="form-control" id="duration"
-                                                placeholder="Subscription Amount" required>
+                                            <input type="number" class="form-control" id="amount" name="mandate[amount]"
+                                                placeholder="Subscription Amount" >
                                         </div>
                                     </div>
 
                                     <div class="col-lg-12 pb-1">
                                         <label for="remarks">Remarks (Optional)</label>
-                                        <textarea class="form-control" placeholder="Remarks (Optional)" id="remarks" style="height: 100px"></textarea>
+                                        <textarea class="form-control" placeholder="Remarks (Optional)"  id="remark" name="mandate[subscription_desc]" style="height: 100px"></textarea>
                                     </div>
 
                                     <div class="text-center mt-3 mb-3">
@@ -225,9 +183,8 @@
                                     </div>
 
                                 </div>
-                            </form>
-                        </div>
-
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
