@@ -1,6 +1,6 @@
 <?php
 
-namespace JagdishJP\Billdesk\Messages;
+namespace JagdishJP\BilldeskHmac\Messages;
 
 use Exception;
 use GuzzleHttp\Client;
@@ -8,9 +8,9 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
-use JagdishJP\Billdesk\Contracts\Message as Contract;
-use JagdishJP\Billdesk\Models\Transaction;
-use JagdishJP\Billdesk\Traits\Encryption;
+use JagdishJP\BilldeskHmac\Contracts\Message as Contract;
+use JagdishJP\BilldeskHmac\Models\Transaction;
+use JagdishJP\BilldeskHmac\Traits\Encryption;
 
 class TransactionEnquiry extends Message implements Contract
 {

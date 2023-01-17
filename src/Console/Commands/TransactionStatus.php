@@ -1,13 +1,13 @@
 <?php
 
-namespace JagdishJP\Billdesk\Console\Commands;
+namespace JagdishJP\BilldeskHmac\Console\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
-use JagdishJP\Billdesk\Billdesk;
-use JagdishJP\Billdesk\Messages\TransactionEnquiry;
-use JagdishJP\Billdesk\Models\Transaction;
+use JagdishJP\BilldeskHmac\Billdesk;
+use JagdishJP\BilldeskHmac\Messages\TransactionEnquiry;
+use JagdishJP\BilldeskHmac\Models\Transaction;
 
 class TransactionStatus extends Command
 {

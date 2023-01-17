@@ -1,6 +1,6 @@
 <?php
 
-namespace JagdishJP\Billdesk\Tests;
+namespace JagdishJP\BilldeskHmac\Tests;
 
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -16,7 +16,7 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
-            \JagdishJP\Billdesk\BilldeskServiceProvider::class,
+            \JagdishJP\BilldeskHmac\BilldeskServiceProvider::class,
         ];
     }
 

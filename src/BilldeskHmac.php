@@ -1,10 +1,10 @@
 <?php
 
-namespace JagdishJP\Billdesk;
+namespace JagdishJP\BilldeskHmac;
 
-use JagdishJP\Billdesk\Messages\TransactionEnquiry;
+use JagdishJP\BilldeskHmac\Messages\TransactionEnquiry;
 
-class Billdesk
+class BilldeskHmac
 {
     /**
      * Returns status of transaction.

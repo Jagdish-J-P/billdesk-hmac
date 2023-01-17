@@ -1,6 +1,6 @@
 <?php
 
-namespace JagdishJP\Billdesk\Console\Commands;
+namespace JagdishJP\BilldeskHmac\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -50,7 +50,7 @@ class BilldeskPublish extends Command
                 return 0;
             }
 
-            $parameters = ['--provider' => 'JagdishJP\Billdesk\BilldeskServiceProvider', '--tag' => "billdesk-{$publishable}"];
+            $parameters = ['--provider' => 'JagdishJP\BilldeskHmac\BilldeskHmacServiceProvider', '--tag' => "billdesk-{$publishable}"];
 
             if (Str::is($force, 'force')) {
                 $parameters['--force'] = null;

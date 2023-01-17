@@ -1,6 +1,6 @@
 <?php
 
-namespace JagdishJP\Billdesk\Contracts;
+namespace JagdishJP\BilldeskHmac\Contracts;
 
 interface Message
 {

@@ -1,13 +1,26 @@
 <?php
 
-namespace JagdishJP\Billdesk\Messages;
+namespace JagdishJP\BilldeskHmac\Messages;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
-use JagdishJP\Billdesk\Models\Transaction;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request;
+use JagdishJP\BilldeskHmac\Constant\Constants;
+use JagdishJP\BilldeskHmac\Constant\Response;
+use JagdishJP\BilldeskHmac\Models\Transaction;
+use JagdishJP\BilldeskHmac\Traits\Encryption;
+use Jose\Component\Core\AlgorithmManager;
+use Jose\Component\KeyManagement\JWKFactory;
+use Jose\Component\Signature\Algorithm\HS256;
+use Jose\Component\Signature\Serializer\CompactSerializer;
+use Jose\Component\Signature\JWSBuilder;
+use Jose\Component\Signature\JWSVerifier;
 
 class Message
 {
+    use Encryption;
+
     public const TYPE_FIELD_1 = 'R';
 
     public const TYPE_FIELD_2 = 'F';
@@ -21,49 +34,25 @@ class Message
     public $transaction_id;
 
     /** Security Key provided by BILLDESK */
-    public $securityId;
+    public $clientId;
 
     /** Merchant ID provided by BILLDESK */
     public $merchantId;
 
+    /** HMAC Key provided by BILLDESK */
+    public $hmacKey;
+
     /** UAT Prefix provided by BILLDESK */
     public $uatPrefix;
 
-    /** BILLDESK type field */
-    public $typeField1;
-
-    /** BILLDESK type field */
-    public $typeField2;
-
-    /** Na Field */
-    public $naData1;
-
-    /** Na Field */
-    public $naData2;
-
-    /** Na Field */
-    public $naData3;
-
-    /** Na Field */
-    public $naData4;
-
-    /** Na Field */
-    public $naData5;
-
-    /** Na Field */
-    public $naData7;
-
-    /** Na Field */
-    public $naData8;
-
     /** Currency */
-    public $currencyType;
+    public $currency;
 
     /** Total amount to be paid */
     public $amount;
 
     /** datetime of the transaction in YYYYMMDDHHmmSS format */
-    public $timestamp;
+    public $order_date;
 
     /** datetime of the transaction generate from BILLDESK in YYYYMMDDHH24MISS */
     public $transactionTimestamp;
@@ -72,28 +61,37 @@ class Message
     public $reference;
 
     /** Additional Info */
-    public $additionalInfo1;
-
-    /** Additional Info */
-    public $additionalInfo2;
-
-    /** Additional Info */
-    public $additionalInfo3;
-
-    /** Additional Info */
-    public $additionalInfo4;
-
-    /** Additional Info */
-    public $additionalInfo5;
-
-    /** Additional Info */
-    public $additionalInfo6;
-
-    /** Additional Info */
-    public $additionalInfo7;
+    public $additionalInfo;
 
     /** Response Url */
     public $ResponseUrl;
+
+    /** Item Code */
+    public $item_code;
+
+    /** Recurrence Rule */
+    public $recurrence_rule;
+
+    /** Debit Day */
+    public $debit_day;
+
+    /** Mandate Required */
+    public $mandate_required;
+
+    /** Settlement line of business */
+    public $settlement_lob;
+
+    /** mandate object */
+    public $mandate;
+
+    /** customer object */
+    public $customer;
+
+    /** device object */
+    public $device;
+
+    /** invoice object */
+    public $invoice;
 
     /** Transaction response status sent by BILLDESK */
     public $transactionStatus;
@@ -119,42 +117,81 @@ class Message
     /** Billdesk response values */
     public $responseValues;
 
+    /** payload */
+    public $payload;
+
+    /** jweHelper */
+    public $jweHelper;
+    public $signAlgoManager;
+    public $clientJwk;
+    public $jwsBuilder;
+    public $jwsVerifier;
+    public $jwsSerializer;
+
     public function __construct()
     {
         $this->id           = $this->generate_uuid();
-        $this->typeField1   = self::TYPE_FIELD_1;
-        $this->typeField2   = self::TYPE_FIELD_2;
+
         $this->merchantId   = Config::get('billdesk.merchant_id');
-        $this->securityId   = Config::get('billdesk.security_id');
-        $this->checksumKey  = Config::get('billdesk.checksum_key');
+        $this->clientId     = Config::get('billdesk.client_id');
+        $this->hmacKey      = Config::get('billdesk.hmac_key');
         $this->uatPrefix    = Config::get('billdesk.uat_prefix');
-        $this->currencyType = Config::get('billdesk.currency');
+        $this->currency     = Config::get('billdesk.currency');
 
-        $this->naData1 = $this->naData2 = $this->naData3 = $this->naData4
-                       = $this->naData5            = $this->naData7            = $this->naData8
-                       = $this->additionalInfo1            = $this->additionalInfo2            = $this->additionalInfo3
-                       = $this->additionalInfo4            = $this->additionalInfo5
-                       = $this->additionalInfo6            = $this->additionalInfo7            = self::NA_FIELD;
+        $this->signAlgoManager = new AlgorithmManager([
+            new HS256()
+        ]);
 
+        $this->clientJwk     = JWKFactory::createFromSecret($this->hmacKey);
+        $this->jwsBuilder    = new JWSBuilder($this->signAlgoManager);
+        $this->jwsVerifier   = new JWSVerifier($this->signAlgoManager);
+        $this->jwsSerializer = new CompactSerializer();
+
+        $this->item_code    = 'DIRECT';
         $this->ResponseUrl  = Config::get('billdesk.response_url');
-        $this->responseKeys = explode('|', 'MerchantID|UniqueTxnID|TxnReferenceNo|BankReferenceNo|TxnAmount|BankID|BIN|TxnType|'
-            . 'CurrencyName|ItemCode|SecurityType|SecurityID|SecurityPassword|TxnDate|AuthStatus|SettlementType|AdditionalInfo1|'
-            . 'AdditionalInfo2|AdditionalInfo3|AdditionalInfo4|AdditionalInfo5|AdditionalInfo6|AdditionalInfo7|ErrorStatus|'
-            . 'ErrorDescription|CheckSum');
-
-        $this->queryResponseKeys = explode('|', 'RequestType|MerchantID|UniqueTxnID|TxnReferenceNo|BankReferenceNo|TxnAmount|BankID|'
-            . 'BankMerchantID|TxnType|CurrencyName|ItemCode|SecurityType|SecurityID|SecurityPassword|TxnDate|AuthStatus|SettlementType|'
-            . 'AdditionalInfo1|AdditionalInfo2|AdditionalInfo3|AdditionalInfo4|AdditionalInfo5|AdditionalInfo6|AdditionalInfo7|ErrorStatus|'
-            . 'ErrorDescription|Filler1|RefundStatus|TotalRefundAmount|LastRefundDate|LastRefundRefNo|QueryStatus|CheckSum');
+        
     }
 
     public function generate_uuid()
     {
         do {
             $uuid = Str::uuid();
-        }
-        while (Transaction::where('unique_id', $uuid)->first());
+        } while (Transaction::where('unique_id', $uuid)->first());
 
         return $uuid;
+    }
+
+    public function api($url, $request, $headers = [])
+    {
+       
+        if (empty($headers[Constants::HEADER_BD_TRACE_ID])) {
+            $headers[Constants::HEADER_BD_TRACE_ID] = uniqid();
+        }
+
+        $bdTraceid = $headers[Constants::HEADER_BD_TRACE_ID];
+
+        if (empty($headers[Constants::HEADER_BD_TIMESTAMP])) {
+            $headers[Constants::HEADER_BD_TIMESTAMP] = now()->format('YmdHis');
+        }
+
+        $bdTimestamp = $headers[Constants::HEADER_BD_TIMESTAMP];
+
+        $headers["Content-Type"] = "application/jose";
+        $headers["Accept"] = "application/jose";
+
+        $requestJson = json_encode($request);
+
+        $token = $this->encryptAndSign($requestJson, [
+            Constants::JWE_HEADER_CLIENTID => $this->clientId
+        ]);
+
+        $client = new Client();
+        $request = new Request("POST", $url, $headers, $token);
+        $response = $client->send($request);
+        $responseToken = $response->getBody()->getContents();
+
+        $responseBody = $this->verifyAndDecrypt($responseToken);
+
+        return new Response($response->getStatusCode(), json_decode($responseBody), $bdTraceid, $bdTimestamp);
     }
 }

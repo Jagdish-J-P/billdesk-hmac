@@ -1,136 +1,266 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <title>{{ config('app.name', 'Laravel') }}</title>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
-        integrity="undefined" crossorigin="anonymous">
-    <link href="{{ asset('assets/vendor/fpx-payment/css/form-validation.css') }}" rel="stylesheet">
+    <title>{{ config('app.name', 'Laravel Billdesk Implementation') }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous" />
+    <link href="{{ asset('assets/vendor/billdesk-hmac/css/style.css') }}" rel="stylesheet">
 </head>
 
 <body>
-    <div class="container">
-        <div class="py-5 text-center">
-            <h2>Payment Confirmation</h2>
-            <p class="lead">Below is the details of your payment. Please confirm it and click on proceed to initiate
-                payment.
-            </p>
+    <nav class="navbar navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="./">
+                <img src="assets/img/logo.png" alt="" width="100%" height="100%">
+            </a>
         </div>
+    </nav>
+    <section class="paymentform">
+        <div class="container">
+            <div class="mainform">
+                <div>
+                    <div class="payment-type">
+                        <label>Nature of Payment <span class="requiredfild">*</span> </label>
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" id="validationFormCheck2"
+                                name="paymentnature" value="otp" required checked>
+                            <label class="form-check-label" for="validationFormCheck2">One Time Payment</label>
+                        </div>
+                        <div class="form-check form-check-inline mb-3">
+                            <input type="radio" class="form-check-input" id="validationFormCheck3"
+                                name="paymentnature" value="si" required>
+                            <label class="form-check-label" for="validationFormCheck3">Standing Instructions
+                                (SI)</label>
+                            <div class="invalid-feedback">More example invalid feedback text</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="otp box" style="display: block;">
+                            <form class="form-control" method="POST"
+                                action="{{ route('billdesk.payment.auth.request') }}">
+                                @csrf
+                                <div class="row">
 
-        <form class="needs-validation" novalidate method="POST" action="{{ route('billdesk.payment.auth.request') }}">
-            @csrf
-            <input type="hidden" name="response_format" value="{{ $response_format }}" />
-            <input type="hidden" name="reference_id" value="{{ $request->reference_id ?? uniqid() }}" />
-            @if ($errors->all())
-                <div class="alert alert-danger">
-                    {{ implode(',', $errors->all()) }}
-                </div>
-            @endif
-            <div class="row">
-                <div class="col-md-12 order-md-1">
-                    <div class="border p-3 mb-3 rounded">
-                        <h4 class="mb-3">Billing details</h4>
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label for="customer_name">Buyer name</label>
-                                <input type="text" class="form-control" id="customer_name" name="customer_name" readonly
-                                    placeholder="Enter buyer name"
-                                    value="{{ $test ? 'Test Buyer Name' : $request->customer_name }}" required>
-                                <div class="invalid-feedback">
-                                    Valid buyer name is required.
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="first_name" class="form-label">First Name <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="text" class="form-control" id="first_name" name="additional_info[additional_info1]"
+                                            placeholder="First Name" required>
+                                    </div>
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="last_name" class="form-label">Last Name <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="text" class="form-control" id="last_name" name="additional_info[additional_info2]"
+                                            placeholder="Last Name" required>
+                                    </div>
+
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="email" class="form-label">Email <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="text" class="form-control" id="email" placeholder="Email" name="additional_info[additional_info3]"
+                                            required>
+                                    </div>
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="mobile_number" class="form-label">Mobile Number <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="number" class="form-control" id="mobile_number" name="additional_info[additional_info4]"
+                                            placeholder="Mobile Number" required>
+                                    </div>
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="city" class="form-label">City <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="text" class="form-control" id="city" placeholder="City" name="additional_info[additional_info5]"
+                                            required>
+                                    </div>
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="sales_executive" class="form-label">Sales Executive <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="text" class="form-control" id="sales_executive" name="additional_info[additional_info6]"
+                                            placeholder="Sales Executive" required>
+                                    </div>
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="member_id" class="form-label">Member ID</label>
+                                        <input type="text" class="form-control" id="member_id" name="additional_info[additional_info7]"
+                                            placeholder="Member ID">
+                                    </div>
+
+                                    <div class="subscr">
+                                        <h3 class="payheader">Amount Summary</h3>
+                                    </div>
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="np" class="form-label">Nature of Payment</label>
+                                        <select id="np" class="form-select" name="additional_info[additional_info8]"
+                                            aria-label="Default select example">
+                                            <option selected>Nature of Payment</option>
+                                            <option value="1">DP</option>
+                                            <option value="2">EMI</option>
+                                            <option value="3">FIT</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-6 pb-1">
+                                        <label for="amount" class="form-label">Amount <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="number" class="form-control" id="amount" name="amount"
+                                            placeholder="Amount" required>
+                                    </div>
+
+                                    <div class="col-lg-12 pb-1">
+                                        <label for="remarks">Remarks (Optional)</label>
+                                        <textarea class="form-control" placeholder="Remarks (Optional)" id="remarks"  name="additional_info[additional_info9]" style="height: 100px"></textarea>
+                                    </div>
+
+                                    <div class="text-center mt-3 mb-3">
+                                        <button class="btn btn-primary" type="submit">Pay Now</button>
+                                    </div>
+
                                 </div>
-                            </div>
+                            </form>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="amount">Amount</label>
-                            <input type="number" class="form-control" id="amount" name="amount" readonly
-                                placeholder="1.00" value="{{ $test ? '1.0' : $request->amount }}" required>
-                            <div class="invalid-feedback">
-                                Please enter a valid amount.
-                            </div>
-                        </div>
+                        <div class="si box">
+                            <form class="form-control" method="POST"
+                                action="{{ route('billdesk.payment.auth.request') }}">
+                                @csrf
+                                <div class="row">
 
-                        <div class="mb-3">
-                            <label for="customer_email">Email</label>
-                            <input type="email" class="form-control" id="customer_email" readonly name="customer_email"
-                                value="{{ $test ? 'you@example.net' : $request->customer_email }}"
-                                placeholder="you@example.com" required>
-                            <div class="invalid-feedback">
-                                Please enter a valid email address.
-                            </div>
-                        </div>
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="first_name" class="form-label">First Name <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="text" class="form-control" id="first_name"
+                                            placeholder="First Name" required>
+                                    </div>
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="last_name" class="form-label">Last Name <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="text" class="form-control" id="last_name"
+                                            placeholder="Last Name" required>
+                                    </div>
 
-                        {{-- <div class="mb-3">
-                            <label for="customer_telephone">Telephone</label>
-                            <input type="tel " class="form-control" id="customer_telephone"
-                            name="customer_telephone" value="{{ $test ? '9999999999' : '' }}"
-                            placeholder="01XXXXXXXX" required>
-                            <div class="invalid-feedback">
-                                Please enter a valid telephone no.
-                            </div>
-                        </div> --}}
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="email" class="form-label">Email <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="text" class="form-control" id="email"
+                                            placeholder="Email" required>
+                                    </div>
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="mobile_number" class="form-label">Mobile Number <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="text" class="form-control" id="mobile_number"
+                                            placeholder="Mobile Number" required>
+                                    </div>
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="city" class="form-label">City <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="text" class="form-control" id="city" placeholder="City"
+                                            required>
+                                    </div>
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="sales_executive" class="form-label">Sales Executive <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="text" class="form-control" id="sales_executive"
+                                            placeholder="Sales Executive" required>
+                                    </div>
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="member_id" class="form-label">Member ID</label>
+                                        <input type="text" class="form-control" id="member_id"
+                                            placeholder="Member ID">
+                                    </div>
 
-                        <div class="mb-3">
-                            <label for="remark">Remark</label>
-                            <textarea class="form-control" id="remark" name="remark"
-                                placeholder="Enter Product Description"
-                                readonly>{{ $test ? 'Test Data' : $request->remark }}</textarea>
-                            <div class="invalid-feedback">
-                                Please enter valid remark
-                            </div>
-                        </div>
+                                    <div class="subscr">
+                                        <h3 class="payheader">Subscription Summary</h3>
+                                    </div>
+                                    <div class="col-lg-3 pb-1">
+                                        <label for="frequency" class="form-label">Frequency</label>
+                                        <input type="text" class="form-control" id="frequency"
+                                            placeholder="Frequency" value="Monthly" required disabled>
+                                    </div>
+                                    <div class="col-lg-3 pb-1">
+                                        <label for="duration" class="form-label">Duration <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="number" class="form-control" id="duration"
+                                            placeholder="Duration" value="6" required>
+                                    </div>
+                                    <div class="col-lg-3 pb-1">
+                                        <label for="start_date" class="form-label">Start Date <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="date" class="form-control" id="start_date"
+                                            placeholder="Start Date" required>
+                                    </div>
+                                    <div class="col-lg-3 pb-1">
+                                        <label for="end_date" class="form-label">End Date <span
+                                                class="requiredfild">*</span></label>
+                                        <input type="date" class="form-control" id="end_date"
+                                            placeholder="End Date" required>
+                                    </div>
+                                    <div class="subscr">
+                                        <h3 class="payheader">Amount Summary</h3>
+                                    </div>
+                                    <div class="col-lg-4 pb-1">
+                                        <label for="frequency" class="form-label">Down Payment Amount</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon1">INR</span>
+                                            <input type="text" class="form-control" id="frequency"
+                                                placeholder="Frequency" value="1.00" required disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 pb-1">
+                                        <label for="duration" class="form-label">Subscription Amount <span
+                                                class="requiredfild">*</span></label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="duration"
+                                                placeholder="Subscription Amount" required>
+                                        </div>
+                                    </div>
 
-                        <div class="row mb-3">
-                            <div class="col">
-                                <div class="custom-control custom-checkbox">
-                                    <label class="custom-control-label" for="agree">By clicking on "proceed", you agree
-                                        to the terms and conditions of Billdesk.</label>
+                                    <div class="col-lg-12 pb-1">
+                                        <label for="remarks">Remarks (Optional)</label>
+                                        <textarea class="form-control" placeholder="Remarks (Optional)" id="remarks" style="height: 100px"></textarea>
+                                    </div>
+
+                                    <div class="text-center mt-3 mb-3">
+                                        <button class="btn btn-primary" type="submit">Pay Now</button>
+                                    </div>
+
                                 </div>
-                            </div>
+                            </form>
                         </div>
 
-                        <button class="btn btn-primary btn-lg btn-block" type="submit">Proceed</button>
                     </div>
                 </div>
             </div>
-        </form>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
-    </script>
-    <script>
-        window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery-slim.min.js"><\/script>')
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js" crossorigin="anonymous">
-    </script>
-    <script>
-        // Example starter JavaScript for disabling form submissions if there are invalid fields
-        (function() {
-            'use strict';
+        </div>
+    </section>
 
-            window.addEventListener('load', function() {
-                // Fetch all the forms we want to apply custom Bootstrap validation styles to
-                var forms = document.getElementsByClassName('needs-validation');
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 
-                // Loop over them and prevent submission
-                var validation = Array.prototype.filter.call(forms, function(form) {
-                    form.addEventListener('submit', function(event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
-                });
-            }, false);
-        })();
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('input[type="radio"]').click(function() {
+                var inputValue = $(this).attr("value");
+                var targetBox = $("." + inputValue);
+                $(".box").not(targetBox).hide();
+                $(targetBox).show();
+            });
+        });
+
+        window.oncontextmenu = function() {
+            return false;
+        }
+
+        $(document).keydown(function(event) {
+            if (event.keyCode == 123) {
+                return false;
+            } else if ((event.ctrlKey && event.shiftKey && event.keyCode == 73) || (event.ctrlKey && event
+                    .shiftKey && event.keyCode == 74) || (event.ctrlKey && event.keyCode == 85)) {
+                return false;
+            }
+        });
     </script>
+
 </body>
 
 </html>

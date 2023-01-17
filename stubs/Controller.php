@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Billdesk;
+namespace App\Http\Controllers\BilldeskHmac;
 
 use App\Http\Controllers\Controller as BaseController;
-use JagdishJP\Billdesk\Http\Requests\AuthorizationConfirmation as Request;
+use JagdishJP\BilldeskHmac\Http\Requests\AuthorizationConfirmation as Request;
 
 class Controller extends BaseController
 {

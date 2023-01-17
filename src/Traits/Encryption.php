@@ -1,12 +1,35 @@
 <?php
 
-namespace JagdishJP\Billdesk\Traits;
+namespace JagdishJP\BilldeskHmac\Traits;
+
+use JagdishJP\BilldeskHmac\Exceptions\SignatureVerificationException;
 
 trait Encryption
 {
-    // to encrypt the given string with sha256 method
-    public function encrypt($str)
+
+    public function encryptAndSign($payload, $headers = array())
     {
-        return strtoupper(hash_hmac('sha256', $str, $this->checksumKey, false));
+        $jweHeaders = array_merge($headers, array(
+            'alg' => 'HS256'
+        ));
+
+        $jws = $this->jwsBuilder
+            ->create()
+            ->withPayload($payload)
+            ->addSignature($this->clientJwk, $jweHeaders)
+            ->build();
+
+        return $this->jwsSerializer->serialize($jws, 0);
+    }
+
+    public function verifyAndDecrypt($token)
+    {
+        $jws = $this->jwsSerializer->unserialize($token);
+
+        if (!$this->jwsVerifier->verifyWithKey($jws, $this->clientJwk, 0)) {
+            throw new SignatureVerificationException("Failed to verify signature");
+        }
+
+        return $jws->getPayload();
     }
 }

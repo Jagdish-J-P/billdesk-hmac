@@ -1,4 +1,4 @@
-# BillDesk Payment Gateway Integration in Laravel
+# BillDesk Payment Gateway with HMAC Encryption implementation in Laravel
 
  Repository has been developed to integrate BillDesk Payment Gateway in Laravel.
  
@@ -9,7 +9,7 @@
 You can install the package via composer:
 
 ```bash
-composer require jagdish-j-p/billdesk
+composer require jagdish-j-p/billdesk-hmac
 ```
 
 Then run the publish command to publish the config files and support controller and view
@@ -30,14 +30,14 @@ This will generate the following files
 1. Add your response urls and your Merchant Id, Security Id and Cheksum Key to the `.env` file.
 
 ```php
-BILLDESK_RESPONSE_URL=https://app.test/billdesk/payments/callback
-BILLDESK_RESPONSE_PATH=billdesk/payments/callback
-BILLDESK_WEBHOOK_URL=https://app.test/billdesk/payments/webhook
-BILLDESK_WEBHOOK_PATH=billdesk/payments/webhook
+BILLDESK_RESPONSE_PATH=billdesk/payment/callback
+BILLDESK_WEBHOOK_PATH=billdesk/payment/webhook
+BILLDESK_RESPONSE_URL="${APP_URL}/${BILLDESK_RESPONSE_PATH}"
+BILLDESK_WEBHOOK_URL="${APP_URL}/${BILLDESK_WEBHOOK_PATH}"
 
 BILLDESK_MERCHANT_ID=
-BILLDESK_SECURITY_ID=
-BILLDESK_CHECKSUM_KEY=
+BILLDESK_CLIENT_ID=
+BILLDESK_HMAC_KEY=
 BILLDESK_UAT_PREFIX="test-prefix"
 ```
 

@@ -1,12 +1,12 @@
 <?php
 
-namespace JagdishJP\Billdesk\Messages;
+namespace JagdishJP\BilldeskHmac\Messages;
 
 use Exception;
-use JagdishJP\Billdesk\Constant\Response;
-use JagdishJP\Billdesk\Contracts\Message as Contract;
-use JagdishJP\Billdesk\Models\Transaction;
-use JagdishJP\Billdesk\Traits\Encryption;
+use JagdishJP\BilldeskHmac\Constant\Response;
+use JagdishJP\BilldeskHmac\Contracts\Message as Contract;
+use JagdishJP\BilldeskHmac\Models\Transaction;
+use JagdishJP\BilldeskHmac\Traits\Encryption;
 
 class AuthorizationConfirmation extends Message implements Contract
 {

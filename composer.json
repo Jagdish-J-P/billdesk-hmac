@@ -1,6 +1,6 @@
 {
-    "name": "jagdish-j-p/billdesk",
-    "description": "Package to integrate BillDesk Payment gateway in Laravel",
+    "name": "jagdish-j-p/billdesk-hmac",
+    "description": "Package to integrate BillDesk Payment gateway with HMAC Encryption in Laravel",
     "license": "MIT",
     "type": "library",
     "authors": [
@@ -10,12 +10,19 @@
         }
     ],
     "require": {
-        "laravelcollective/html": "^6.2"
+        "guzzlehttp/guzzle": "^7.3",
+        "laravelcollective/html": "^6.2",
+        "php": ">=7.2",
+        "web-token/jwt-core": "2.2.10",
+        "web-token/jwt-key-mgmt": "2.2.10",
+        "web-token/jwt-signature": "2.2.10",
+        "web-token/jwt-signature-algorithm-hmac": "2.2.10",
+        "monolog/monolog": "^2.2"
     },
     "autoload": {
         "psr-4": {
-            "JagdishJP\\Billdesk\\Tests\\": "tests",
-            "JagdishJP\\Billdesk\\": "src"
+            "JagdishJP\\BilldeskHmac\\Tests\\": "tests",
+            "JagdishJP\\BilldeskHmac\\": "src"
         }
     },
     "autoload-dev": {
@@ -32,7 +39,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "JagdishJP\\Billdesk\\BilldeskServiceProvider"
+                "JagdishJP\\BilldeskHmac\\BilldeskHmacServiceProvider"
             ]
         }
     }

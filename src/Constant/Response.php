@@ -1,9 +1,14 @@
 <?php
 
-namespace JagdishJP\Billdesk\Constant;
+namespace JagdishJP\BilldeskHmac\Constant;
 
 class Response
 {
+    private $responseStatus;
+    private $response;
+    private $bdTraceId;
+    private $bdTimestamp;
+
     public const STATUS = [
         '0300' => 'Success',
         '0399' => 'Invalid Authentication At Bank',
@@ -11,4 +16,27 @@ class Response
         '0002' => 'BillDesk is waiting for Response from Bank',
         '0001' => 'Error at BillDesk',
     ];
+
+    function __construct($responseStatus, $response, $bdTraceId, $bdTimestamp) {
+        $this->responseStatus = $responseStatus;
+        $this->response = $response;        
+        $this->bdTraceId = $bdTraceId;
+        $this->bdTimestamp = $bdTimestamp;
+    }
+
+    public function getResponseStatus() {
+        return $this->responseStatus;
+    }
+
+    public function getResponse() {
+        return $this->response;
+    }
+
+    public function getBdTraceid() {
+        return $this->bdTraceId;
+    }
+
+    public function getBdTimestamp() {
+        return $this->bdTimestamp;
+    }
 }

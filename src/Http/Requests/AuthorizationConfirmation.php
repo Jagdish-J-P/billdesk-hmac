@@ -1,9 +1,9 @@
 <?php
 
-namespace JagdishJP\Billdesk\Http\Requests;
+namespace JagdishJP\BilldeskHmac\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use JagdishJP\Billdesk\Messages\AuthorizationConfirmation as AuthorizationConfirmationMessage;
+use JagdishJP\BilldeskHmac\Messages\AuthorizationConfirmation as AuthorizationConfirmationMessage;
 
 class AuthorizationConfirmation extends FormRequest
 {

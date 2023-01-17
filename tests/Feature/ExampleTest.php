@@ -1,9 +1,9 @@
 <?php
 
-namespace JagdishJP\Billdesk\Tests\Feature;
+namespace JagdishJP\BilldeskHmac\Tests\Feature;
 
 use Artisan;
-use JagdishJP\Billdesk\Tests\TestCase;
+use JagdishJP\BilldeskHmac\Tests\TestCase;
 
 class ExampleTest extends TestCase
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace JagdishJP\Billdesk\Http\Controllers;
+namespace JagdishJP\BilldeskHmac\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use JagdishJP\Billdesk\Messages\AuthorizationRequest;
+use JagdishJP\BilldeskHmac\Messages\CreateOrder;
 
 class PaymentController extends Controller
 {
@@ -17,8 +17,8 @@ class PaymentController extends Controller
      */
     public function handle(Request $request)
     {
-        return view('billdesk::redirect_to_bank', [
-            'request' => (new AuthorizationRequest())->handle($request->all()),
+        return view('billdesk-hmac::redirect_to_bank', [
+            'request' => (new CreateOrder())->handle($request->all()),
         ]);
     }
 }

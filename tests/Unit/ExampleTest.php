@@ -1,6 +1,6 @@
 <?php
 
-namespace JagdishJP\Billdesk\Tests\Unit;
+namespace JagdishJP\BilldeskHmac\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 

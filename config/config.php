@@ -9,14 +9,33 @@ return [
      */
     'merchant_id' => env('BILLDESK_MERCHANT_ID'),
 
-    // The Merchant Security Key
-    'security_id' => env('BILLDESK_SECURITY_ID'),
+    
+    /*
+     * The Merchant Client ID
+     *
+     * You need to contact BillDesk to request client id.
+     */
+    'client_id' => env('BILLDESK_CLIENT_ID'),
 
-    // The merchant Checksum Key
-    'checksum_key' => env('BILLDESK_CHECKSUM_KEY'),
+    
+    /*
+     * The merchant HMAC Key
+     *
+     * You need to contact BillDesk to request HMAC Key.
+     */
+    'hmac_key' => env('BILLDESK_HMAC_KEY'),
 
-    // The UAT Prefix provided by Billdesk
+    /**
+     * The UAT Prefix to identify test transactions
+     * 
+     */ 
     'uat_prefix' => env('BILLDESK_UAT_PREFIX', ''),
+
+    /**
+     * The UAT Prefix to identify test transactions
+     * 
+     */ 
+    'merchant_logo' => env('BILLDESK_MERCHANT_LOGO'),
 
     /*
      * Response URL used by BillDesk to direct the user back to your platform after a transaction is completed
@@ -49,13 +68,19 @@ return [
     // Middleware
     'middleware' => ['web'],
 
+    // Date Format
+    'date_format' => 'c',
+    
+    // Recurrence Rule
+    'recurrence_rule' => 'on',
+
     /*
      * The Default Currency
      *
      * set the default currency code used for transaction. You can reach out to BILLDESK to
      * find out what other currency are supported
      */
-    'currency' => env('BILLDESK_CURRENCY', 'INR'),
+    'currency' => env('BILLDESK_CURRENCY', '356'),
 
     /*
      * Urls List
@@ -68,12 +93,34 @@ return [
      */
     'urls' => [
         'uat' => [
-            'payment_request'     => 'https://uat.billdesk.com/pgidsk/PGIMerchantPayment',
-            'transaction_enquiry' => 'https://uat.billdesk.com/pgidsk/PGIQueryController',
+            'js_sdk'              => 'https://uat.billdesk.com/jssdk/v1/dist/',
+            'create_order'        => 'https://pguat.billdesk.io/payments/ve1_2/orders/create',
+            'create_mandate'      => 'https://pguat.billdesk.io/pgsi/ve1_2/mandatetokens/create',
+            'update_mandate'      => 'https://pguat.billdesk.io/pgsi/v1_2/mandatetokens/update/create',
+            'get_mandate'         => 'https://pguat.billdesk.io/pgsi/v1_2/mandatetokens/get',
+            'list_mandate'        => 'https://pguat.billdesk.io/pgsi/v1_2/mandatetokens/list',
+            'create_invoice'      => 'https://pguat.billdesk.io/pgsi/ve1_2/invoices/create',
+            'get_invoice'         => 'https://pguat.billdesk.io/pgsi/ve1_2/invoices/get',
+            'create_transaction'  => 'https://pguat.billdesk.io/pgsi/ve1_2/transactions/create',
+            'get_transaction'     => 'https://pguat.billdesk.io/pgsi/ve1_2/transactions/get',
+            'create_refund'       => 'https://pguat.billdesk.io/pgsi/ve1_2/refunds/create',
+            'get_refund'          => 'https://pguat.billdesk.io/pgsi/ve1_2/refunds/get',
+            'transaction_enquiry' => 'https://uat.billdesk.com/jssdk/v1/dist/PGIQueryController',
         ],
         'production' => [
-            'payment_request'     => 'https://pgi.billdesk.com/pgidsk/PGIMerchantPayment',
-            'transaction_enquiry' => 'https://www.billdesk.com/pgidsk/PGIQueryController',
+            'js_sdk'              => 'https://pay.billdesk.com/jssdk/v1/dist/',
+            'create_order'        => 'https://pay.billdesk.io/payments/ve1_2/orders/create',
+            'create_mandate'      => 'https://pay.billdesk.io/pgsi/ve1_2/mandatetokens/create',
+            'update_mandate'      => 'https://pay.billdesk.io/pgsi/v1_2/mandatetokens/update/create',
+            'get_mandate'         => 'https://pay.billdesk.io/pgsi/v1_2/mandatetokens/get',
+            'list_mandate'        => 'https://pay.billdesk.io/pgsi/v1_2/mandatetokens/list',
+            'create_invoice'      => 'https://pay.billdesk.io/pgsi/ve1_2/invoices/create',
+            'get_invoice'         => 'https://pay.billdesk.io/pgsi/ve1_2/invoices/get',
+            'create_transaction'  => 'https://pay.billdesk.io/pgsi/ve1_2/transactions/create',
+            'get_transaction'     => 'https://pay.billdesk.io/pgsi/ve1_2/transactions/get',
+            'create_refund'       => 'https://pay.billdesk.io/pgsi/ve1_2/refunds/create',
+            'get_refund'          => 'https://pay.billdesk.io/pgsi/ve1_2/refunds/get',
+            'transaction_enquiry' => 'https://pay.billdesk.com/jssdk/v1/dist/PGIQueryController',
         ],
     ],
 ];
