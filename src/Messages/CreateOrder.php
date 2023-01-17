@@ -81,8 +81,8 @@ class CreateOrder extends Message implements Contract
         $logo = base64_encode(file_get_contents($merchant_logo));
 
         return [
-            'bdOrderId'     => $response->bdorderid ?? uniqid(),
-            'authToken'     => $response->headers->authorization ?? 'OToken DEDC1071B77800A146B6E8D2530E0429E76520C151B40CC3325D8B6D9242CBA3A6BFA643E7E5596FBEBAE0F46A1FB1BCD099EBC1F59DCD82F390B6BC45FCE036F37F7F589BD687A691E1378F1FF432331C62E7E641E857C8F8A405A4BFE2F01B1EB8F3C69817D45F5DDE9DEE346ACABA1B7208DECA9E43CCE7AB3761553E23D9CB36A870C1819C15C7C4B1CFE2802DFD05F651AA537AB81787.4145535F55415431',
+            'bdOrderId'     => $response->bdorderid,
+            'authToken'     => $response->headers->authorization,
             'response_url'  => $this->ResponseUrl,
             'merchant_logo' => "data:image/$ext;base64:$logo",
         ];
