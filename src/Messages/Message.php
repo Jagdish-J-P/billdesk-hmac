@@ -152,7 +152,7 @@ class Message
         
         $this->device = [
             'init_channel' => 'internet',
-            'ip' => '103.179.19.26' ?? request()->ip(),
+            'ip' => request()->ip(),
             'user_agent' => request()->header('user-agent'),
         ];
     }
