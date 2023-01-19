@@ -5,6 +5,7 @@ namespace JagdishJP\BilldeskHmac\Messages;
 use Exception;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use JagdishJP\BilldeskHmac\Contracts\Message as Contract;
 use JagdishJP\BilldeskHmac\Models\Transaction;
@@ -36,38 +37,42 @@ class CreateOrder extends Message implements Contract
     public function handle($options)
     {
       
-        //todo: create order api
         $data = Validator::make($options, [
-            'reference_id'    => 'nullable',
-            'response_format' => 'nullable',
-            'additional_info' => 'nullable',
-            'invoice'         => 'nullable',
-            'mandate'         => 'nullable',
-            'order_date'      => 'nullable',
-            'debit_day'       => 'nullable',
-            'settlement_lob'  => 'nullable',
-            'amount'          => 'required',
+            'reference_id'       => 'nullable',
+            'response_format'    => 'nullable',
+            'additional_info'    => 'nullable',
+            'invoice'            => 'nullable',
+            'mandate'            => 'nullable',
+            'customer'           => 'nullable|array',
+            'order_date'         => 'nullable',
+            'debit_day'          => 'nullable',
+            'settlement_lob'     => 'nullable',
+            'init_channel'       => 'nullable',
+            'subscription_refid' => 'nullable',
+            'reference_id'       => 'nullable',
+            'mandate_required'   => 'required',
+            'amount'             => 'required',
         ])->validate();
 
         $data['mandate']['mercid']              = $this->merchantId;
         $data['mandate']['currency']            = $this->currency;
-        $data['mandate']['subscription_refid']  = $this->generate_uuid();
+        $data['mandate']['subscription_refid']  = $data['subscription_refid'] ?? null;
         $data['mandate']['debit_day']           = $data['debit_day'] ?? config('billdesk.debit_day');
+        $this->device['init_channel']           = $data['init_channel'] ?? config('billdesk.init_channel');
 
         $this->responseFormat       = $data['response_format'] ?? 'HTML';
         $this->reference            = $data['reference_id'] ?? $this->generate_uuid();
         $this->amount               = $data['amount'];
         $this->order_date           = $data['order_date'] ?? now()->format(config('billdesk.date_format'));
         $this->additionalInfo       = $data['additional_info'] ?? null;
-        $this->mandate              = $data['mandate'] ?? null;
+        $this->mandate              = $data['mandate_required'] == 'Y' ? ($data['mandate'] ?? null) : null;
         $this->invoice              = $data['invoice'] ?? null;
-        $this->device               = $data['device'] ?? null;
         $this->customer             = $data['customer'] ?? null;
         $this->settlement_lob       = $data['settlement_lob'] ?? null;
         $this->recurrence_rule      = $data['recurrence_rule'] ?? config('billdesk.recurrence_rule');
         $this->debit_day            = $data['debit_day'] ?? config('billdesk.debit_day');
         $this->mandate_required     = $data['mandate_required'] ?? 'N';
-
+        
         $this->payload              = $this->format();
 
         $this->saveTransaction();
@@ -75,17 +80,34 @@ class CreateOrder extends Message implements Contract
         try{
             $response = $this->api($this->url, $this->payload)->getResponse();
         }
-        catch(Exception $e) {}
+        catch(Exception $e) {
+            
+            Log::channel('daily')->debug('create_order-payload', ['payload' => $this->payload]);
+            Log::channel('daily')->debug('create_order-handle', ['error' => $e->getMessage()]);
+            throw $e;
+        }
 
         $ext = last(explode('.', $merchant_logo = public_path(config('billdesk.merchant_logo'))));
         $logo = base64_encode(file_get_contents($merchant_logo));
 
         return [
-            'bdOrderId'     => $response->bdorderid,
-            'authToken'     => $response->headers->authorization,
-            'response_url'  => $this->ResponseUrl,
-            'merchant_logo' => "data:image/$ext;base64:$logo",
+            'create_order_response' => $response,
+            'bdOrderId'             => $response->bdorderid,
+            'authToken'             => $this->getHeaders($response)->headers->authorization,
+            'url'                   => $this->getHeaders($response, 'GET')->href,
+            'response_url'          => $this->ResponseUrl,
+            'merchant_logo'         => "data:image/$ext;base64:$logo",
         ];
+    }
+    
+    /**
+     * Format data for checksum.
+     *
+     * @return object
+     */
+    private function getHeaders($response, $method = 'POST')
+    {
+        return collect($response->links)->filter(fn($arr) => $arr->method == $method)->first();
     }
 
     /**
@@ -119,7 +141,7 @@ class CreateOrder extends Message implements Contract
             'mandate'          => $this->mandate,
             'customer'         => $this->customer,
             'device'           => $this->device,
-            'invoice'          => $this->invoice,
+            //'invoice'          => $this->invoice,
         ]);
     }
 

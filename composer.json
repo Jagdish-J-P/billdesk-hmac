@@ -40,7 +40,10 @@
         "laravel": {
             "providers": [
                 "JagdishJP\\BilldeskHmac\\BilldeskHmacServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "BilldeskHmac": "JagdishJP\\BilldeskHmac\\Facades\\BilldeskHmac"
+            }
         }
     }
 }

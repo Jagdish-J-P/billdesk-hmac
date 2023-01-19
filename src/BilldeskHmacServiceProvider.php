@@ -19,6 +19,7 @@ class BilldeskHmacServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'billdesk');
+        $this->app->bind('billdeskhmac', fn($app) => new BilldeskHmac());
     }
 
     /**

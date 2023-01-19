@@ -2,10 +2,23 @@
 
 namespace JagdishJP\BilldeskHmac;
 
+use JagdishJP\BilldeskHmac\Messages\CreateOrder;
 use JagdishJP\BilldeskHmac\Messages\TransactionEnquiry;
 
 class BilldeskHmac
 {
+    /**
+     * Creates Order.
+     *
+     * @param array $payload 
+     *
+     * @return array
+     */
+    public static function createOrder(array $payload)
+    {
+        return (new CreateOrder())->handle($payload);
+    }
+    
     /**
      * Returns status of transaction.
      *
@@ -15,8 +28,7 @@ class BilldeskHmac
      */
     public static function getTransactionStatus(string $reference_id)
     {
-        $transactionEnquiry = new TransactionEnquiry();
-        $transactionEnquiry->handle(compact('reference_id'));
+        $transactionEnquiry = (new TransactionEnquiry())->handle(compact('reference_id'));
 
         $dataList = $transactionEnquiry->getData();
 

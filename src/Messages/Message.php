@@ -150,12 +150,17 @@ class Message
         $this->item_code    = config('billdesk.item_code');
         $this->ResponseUrl  = config('billdesk.response_url');
         
+        $this->device = [
+            'init_channel' => 'internet',
+            'ip' => '103.179.19.26' ?? request()->ip(),
+            'user_agent' => request()->header('user-agent'),
+        ];
     }
 
     public function generate_uuid()
     {
         do {
-            $uuid = Str::uuid();
+            $uuid = Str::uuid()->toString();
         } while (Transaction::where('unique_id', $uuid)->first());
 
         return $uuid;
@@ -163,7 +168,7 @@ class Message
 
     public function api($url, $request, $headers = [])
     {
-       
+
         if (empty($headers[Constants::HEADER_BD_TRACE_ID])) {
             $headers[Constants::HEADER_BD_TRACE_ID] = uniqid();
         }

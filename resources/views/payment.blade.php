@@ -21,17 +21,22 @@
     <section class="paymentform">
         <div class="container">
             <div class="mainform">
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <li>{{ implode('<li>', $errors->all()) }}
+                    </div>
+                @endif
                 <div>
                     <div class="payment-type">
                         <label>Nature of Payment <span class="requiredfild">*</span> </label>
                         <div class="form-check form-check-inline">
-                            <input type="radio" class="form-check-input" id="validationFormCheck2"
-                                name="mandate_required" value="N" required checked>
+                            <input type="radio" class="form-check-input" id="validationFormCheck2" name="nature_of_payment"
+                                value="otp" required checked />
                             <label class="form-check-label" for="validationFormCheck2">One Time Payment</label>
                         </div>
                         <div class="form-check form-check-inline mb-3">
-                            <input type="radio" class="form-check-input" id="validationFormCheck3"
-                                name="mandate_required" value="Y" required>
+                            <input type="radio" class="form-check-input" id="validationFormCheck3" name="nature_of_payment"
+                                value="si" required />
                             <label class="form-check-label" for="validationFormCheck3">Standing Instructions
                                 (SI)</label>
                             <div class="invalid-feedback">More example invalid feedback text</div>
@@ -46,46 +51,48 @@
                                     <label for="first_name" class="form-label">First Name <span
                                             class="requiredfild">*</span></label>
                                     <input type="text" class="form-control" id="first_name"
-                                        name="additional_info[additional_info1]" placeholder="First Name" required>
+                                        name="customer[first_name]" placeholder="First Name" required>
+                                    <input type="hidden" id="mandate_required" name="mandate_required" value="N" />
+                                    <input type="hidden" id="customerId" name="mandate[customer_refid]" value="{{ uniqid() }}" />
                                 </div>
                                 <div class="col-lg-6 mb-4">
                                     <label for="last_name" class="form-label">Last Name <span
                                             class="requiredfild">*</span></label>
                                     <input type="text" class="form-control" id="last_name"
-                                        name="additional_info[additional_info2]" placeholder="Last Name" required>
+                                        name="customer[last_name]" placeholder="Last Name" required>
                                 </div>
 
                                 <div class="col-lg-6 mb-4">
                                     <label for="email" class="form-label">Email <span
                                             class="requiredfild">*</span></label>
                                     <input type="text" class="form-control" id="email" placeholder="Email"
-                                        name="additional_info[additional_info3]" required>
+                                        name="customer[email]" required>
                                 </div>
                                 <div class="col-lg-6 mb-4">
                                     <label for="mobile_number" class="form-label">Mobile Number <span
                                             class="requiredfild">*</span></label>
                                     <input type="number" class="form-control" id="mobile_number"
-                                        name="additional_info[additional_info4]" placeholder="Mobile Number" required>
+                                        name="customer[mobile]" placeholder="Mobile Number" required>
                                 </div>
                                 <div class="col-lg-6 mb-4">
                                     <label for="city" class="form-label">City <span
                                             class="requiredfild">*</span></label>
                                     <input type="text" class="form-control" id="city" placeholder="City"
-                                        name="additional_info[additional_info5]" required>
+                                        name="additional_info[additional_info1]" required>
                                 </div>
                                 <div class="col-lg-6 mb-4">
                                     <label for="sales_executive" class="form-label">Sales Executive <span
                                             class="requiredfild">*</span></label>
                                     <input type="text" class="form-control" id="sales_executive"
-                                        name="additional_info[additional_info6]" placeholder="Sales Executive" required>
+                                        name="additional_info[additional_info2]" placeholder="Sales Executive" required>
                                 </div>
                                 <div class="col-lg-6 mb-4">
                                     <label for="member_id" class="form-label">Member ID</label>
                                     <input type="text" class="form-control" id="member_id"
-                                        name="additional_info[additional_info7]" placeholder="Member ID">
+                                        name="additional_info[additional_info3]" placeholder="Member ID">
                                 </div>
                             </div>
-                            <div class="N box" style="display: block;">
+                            <div class="box otp" style="display: block;">
                                 <div class="row">
 
                                     <div class="subscr">
@@ -94,7 +101,7 @@
                                     <div class="col-lg-6 mb-4">
                                         <label for="np" class="form-label">Nature of Payment</label>
                                         <select id="np" class="form-select"
-                                            name="additional_info[additional_info8]"
+                                            name="additional_info[additional_info4]"
                                             aria-label="Default select example">
                                             <option selected>Nature of Payment</option>
                                             <option value="1">DP</option>
@@ -112,7 +119,7 @@
                                     <div class="col-lg-12 pb-1">
                                         <label for="remarks">Remarks (Optional)</label>
                                         <textarea class="form-control" placeholder="Remarks (Optional)" id="remarks"
-                                            name="additional_info[additional_info9]" style="height: 100px"></textarea>
+                                            name="additional_info[additional_info5]" style="height: 100px"></textarea>
                                     </div>
 
                                     <div class="text-center mt-3 mb-3">
@@ -121,7 +128,7 @@
 
                                 </div>
                             </div>
-                            <div class="Y box">
+                            <div class="si box">
 
                                 <div class="row">
                                     <div class="subscr">
@@ -130,7 +137,7 @@
                                     <div class="col-lg-3 pb-1">
                                         <label for="frequency" class="form-label">Frequency</label>
                                         <input type="text" class="form-control" id="frequency" name="mandate[frequency]"
-                                            placeholder="Frequency" value="monthly" required disabled>
+                                            placeholder="Frequency" value="monthly" required readonly>
                                     </div>
                                     <div class="col-lg-3 pb-1">
                                         <label for="duration" class="form-label">Duration <span
@@ -161,7 +168,7 @@
                                         <div class="input-group">
                                             <span class="input-group-text" id="basic-addon1">INR</span>
                                             <input type="text" class="form-control" id="amount" name="amount"
-                                                placeholder="Frequency" value="1.00"  disabled>
+                                                placeholder="Frequency" value="1.00"  readonly>
                                         </div>
                                     </div>
                                     <div class="col-lg-4 pb-1">
@@ -201,6 +208,7 @@
                 var targetBox = $("." + inputValue);
                 $(".box").not(targetBox).hide();
                 $(targetBox).show();
+                $("#mandate_required").val(inputValue == 'si' ? 'Y' : 'N');
             });
         });
 

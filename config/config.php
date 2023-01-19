@@ -78,10 +78,16 @@ return [
     'item_code' => env('BILLDESK_ITEM_CODE', 'DIRECT'),
     
     // Child Window
-    'child_window' => env('BILLDESK_CHILD_WINDOW', false),
+    'child_window' => env('BILLDESK_CHILD_WINDOW', 'false'),
     
     // Retry Count
     'retry_count' => env('BILLDESK_RETRY_COUNT', 3),
+
+    // Debit Day
+    'debit_day' => env('BILLDESK_DEBIT_DAY', 6),
+    
+    // Init Channel
+    'init_channel' => env('BILLDESK_INIT_CHANNEL', 'internet'),
 
     /*
      * The Default Currency
