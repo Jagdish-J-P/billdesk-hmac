@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Facades\Log;
 use JagdishJP\BilldeskHmac\Constant\Constants;
 use JagdishJP\BilldeskHmac\Constant\Response;
 use JagdishJP\BilldeskHmac\Models\Transaction;
@@ -189,6 +190,8 @@ class Message
         $token = $this->encryptAndSign($requestJson, [
             Constants::JWE_HEADER_CLIENTID => $this->clientId
         ]);
+
+        Log::channel('daily')->debug('api-log', ['url' => $url, 'request' => $request, 'headers' => $headers, 'token' => $token]);
 
         $client = new Client();
         $request = new Request("POST", $url, $headers, $token);
