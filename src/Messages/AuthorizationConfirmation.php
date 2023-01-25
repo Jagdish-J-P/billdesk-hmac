@@ -2,6 +2,7 @@
 
 namespace JagdishJP\BilldeskHmac\Messages;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use JagdishJP\BilldeskHmac\Constant\Response;
@@ -42,7 +43,7 @@ class AuthorizationConfirmation extends Message implements Contract
             $this->id                   = $this->responseValues->additional_info->additional_info10;
             $this->reference            = $this->responseValues->orderid;
             $this->transaction_id       = $this->responseValues->transactionid;
-            $this->transaction_date     = $this->responseValues->transaction_date;
+            $this->transaction_date     = Carbon::parse($this->responseValues->transaction_date);
             $this->objectid             = $this->responseValues->objectid;
             $this->transactionStatus    = $this->responseValues->auth_status;
             $this->mandate              = $this->responseValues->mandate ?? null;
@@ -54,7 +55,7 @@ class AuthorizationConfirmation extends Message implements Contract
                     'status'                => self::STATUS_SUCCESS,
                     'message'               => 'Payment is successfull',
                     'transaction_id'        => $this->transaction_id,
-                    'transaction_date'        => $this->transaction_date,
+                    'transaction_date'      => $this->transaction_date,
                     'reference_id'          => $this->reference,
                     'mandate'               => $this->mandate ?? null,
                     'response_format'       => $this->responseFormat,
@@ -67,7 +68,7 @@ class AuthorizationConfirmation extends Message implements Contract
                     'status'                => self::STATUS_PENDING,
                     'message'               => 'Payment Transaction Pending',
                     'transaction_id'        => $this->transaction_id,
-                    'transaction_date'        => $this->transaction_date,
+                    'transaction_date'      => $this->transaction_date,
                     'reference_id'          => $this->reference,
                     'response_format'       => $this->responseFormat,
                     'mandate'               => $this->mandate ?? null,
@@ -79,7 +80,7 @@ class AuthorizationConfirmation extends Message implements Contract
                 'status'                => self::STATUS_FAILED,
                 'message'               => @Response::STATUS[$this->transactionStatus] ?? 'Payment Request Failed',
                 'transaction_id'        => $this->transaction_id,
-                'transaction_date'        => $this->transaction_date,
+                'transaction_date'      => $this->transaction_date,
                 'reference_id'          => $this->reference,
                 'response_format'       => $this->responseFormat,
                 'mandate'               => $this->mandate ?? null,
