@@ -31,17 +31,17 @@ class AuthorizationConfirmation extends Message implements Contract
      */
     public function handle($options)
     {
-        $this->response = @$options['msg'];
-        $response       = $this->list();
-        $this->checksum = $response['CheckSum'];
+        $this->response          = @$options['transaction_response'];
+        $this->responseValues    = $this->verifyAndDecrypt($this->response);
 
         try {
-            $this->verifyResponse();
 
-            $this->reference         = $response['UniqueTxnID'];
-            $this->transaction_id    = $response['TxnReferenceNo'];
-            $this->id                = $response['AdditionalInfo4'];
-            $this->transactionStatus = $response['AuthStatus'];
+            $this->id                   = $this->responseValues['additional_info'][''];
+            $this->reference            = $this->responseValues['orderid'];
+            $this->transaction_id       = $this->responseValues['transactionid'];
+            $this->transactionTimestamp = $this->responseValues['transaction_date'];
+            $this->objectid             = $this->responseValues['objectid'];
+            $this->transactionStatus    = $this->responseValues['auth_status'];
 
             $this->responseFormat = $this->saveTransaction();
 
@@ -72,8 +72,7 @@ class AuthorizationConfirmation extends Message implements Contract
                 'reference_id'    => $this->reference,
                 'response_format' => $this->responseFormat,
             ];
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return [
                 'status'          => self::STATUS_FAILED,
                 'message'         => $e->getMessage(),
@@ -91,7 +90,7 @@ class AuthorizationConfirmation extends Message implements Contract
      */
     public function format()
     {
-        return $this->list()->except('CheckSum')->join('|');
+        return $this->list()->join('|');
     }
 
     /**
@@ -101,23 +100,7 @@ class AuthorizationConfirmation extends Message implements Contract
      */
     public function list()
     {
-        $this->responseValues = explode('|', $this->response);
-
-        return collect(array_combine($this->responseKeys, $this->responseValues));
-    }
-
-    // To validate if response is received from Billdesk or not.
-    protected function verifyResponse()
-    {
-        $result = false;
-
-        if ($this->format()) {
-            if ($this->checksum != strtoupper(hash_hmac('sha256', $this->format(), $this->checksumKey, false))) {
-                throw new Exception('Failed to verify request origin.');
-            }
-        }
-
-        return $result;
+        return collect($this->responseValues);
     }
 
     /**

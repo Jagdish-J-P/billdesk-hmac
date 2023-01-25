@@ -54,6 +54,8 @@ class CreateOrder extends Message implements Contract
             'amount'             => 'required',
         ])->validate();
 
+        $data['additional_info']['additional_info10'] = $this->id;
+
         $data['mandate']['mercid']              = $this->merchantId;
         $data['mandate']['currency']            = $this->currency;
         $data['mandate']['subscription_refid']  = $data['subscription_refid'] ?? null;

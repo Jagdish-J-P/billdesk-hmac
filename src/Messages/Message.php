@@ -118,6 +118,8 @@ class Message
     /** Billdesk response values */
     public $responseValues;
 
+    public $objectid;
+
     /** payload */
     public $payload;
 
