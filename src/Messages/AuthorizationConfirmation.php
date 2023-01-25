@@ -45,7 +45,7 @@ class AuthorizationConfirmation extends Message implements Contract
             $this->transactionTimestamp = $this->responseValues->transaction_date;
             $this->objectid             = $this->responseValues->objectid;
             $this->transactionStatus    = $this->responseValues->auth_status;
-            $this->mandate              = $this->responseValues->mandate;
+            $this->mandate              = $this->responseValues->mandate ?? null;
 
             $this->responseFormat = $this->saveTransaction();
 
