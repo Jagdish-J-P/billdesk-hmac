@@ -55,7 +55,7 @@ class AuthorizationConfirmation extends Message implements Contract
                     'message'               => 'Payment is successfull',
                     'transaction_id'        => $this->transaction_id,
                     'reference_id'          => $this->reference,
-                    'mandate'               => $this->mandate,
+                    'mandate'               => $this->mandate ?? null,
                     'response_format'       => $this->responseFormat,
                     'transaction_response'  => $this->list()->toJson(),
                 ];
