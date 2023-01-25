@@ -19,7 +19,7 @@ class Response
 
     function __construct($responseStatus, $response, $bdTraceId, $bdTimestamp) {
         $this->responseStatus = $responseStatus;
-        $this->response = $response;        
+        $this->response = (object)$response;        
         $this->bdTraceId = $bdTraceId;
         $this->bdTimestamp = $bdTimestamp;
     }
