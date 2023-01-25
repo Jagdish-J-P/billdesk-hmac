@@ -51,7 +51,7 @@ class CreateOrder extends Message implements Contract
             'subscription_refid' => 'nullable',
             'reference_id'       => 'nullable',
             'mandate_required'   => 'required',
-            'amount'             => 'required',
+            'amount'             => 'required_if:mandate_required,N',
         ])->validate();
 
         $data['additional_info']['additional_info10'] = $this->id;

@@ -23,6 +23,9 @@
                 merchantId: "{{ config('billdesk.merchant_id') }}",
                 bdOrderId: "{{ $request['bdOrderId'] }}",
                 authToken: "{{ $request['authToken'] }}",
+                @if(isset($request['mandateTokenId']))
+                mandateTokenId: "{{ $request['mandateTokenId'] }}",
+                @endif
                 childWindow: {{ config('billdesk.child_window') ? 'true' : 'false' }},
                 returnUrl: "{{ !config('billdesk.child_window') ? $request['response_url'] : '<html><head><title>Billdesk</title></head><body onload=\"window.close();\"></body></html>' }}",
                 retryCount: {{ config('billdesk.retry_count') }}
