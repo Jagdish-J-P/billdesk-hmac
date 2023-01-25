@@ -202,6 +202,6 @@ class Message
 
         $responseBody = $this->verifyAndDecrypt($responseToken);
 
-        return new Response($response->getStatusCode(), json_decode($responseBody), $bdTraceid, $bdTimestamp);
+        return new Response($response->getStatusCode(), $responseBody, $bdTraceid, $bdTimestamp);
     }
 }
