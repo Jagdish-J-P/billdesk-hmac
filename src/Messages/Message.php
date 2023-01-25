@@ -56,7 +56,7 @@ class Message
     public $order_date;
 
     /** datetime of the transaction generate from BILLDESK in YYYYMMDDHH24MISS */
-    public $transactionTimestamp;
+    public $transaction_date;
 
     /** Reference Number used to reference the transaction */
     public $reference;
