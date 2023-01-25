@@ -94,6 +94,7 @@ class CreateOrder extends Message implements Contract
 
         return [
             'create_order_response' => $response,
+            'reference_id'             => $response->orderid,
             'bdOrderId'             => $response->bdorderid,
             'authToken'             => $this->getHeaders($response)->headers->authorization,
             'url'                   => $this->getHeaders($response, 'GET')->href,
