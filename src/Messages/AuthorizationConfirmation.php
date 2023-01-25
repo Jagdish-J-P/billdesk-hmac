@@ -37,8 +37,8 @@ class AuthorizationConfirmation extends Message implements Contract
 
         try {
 
-            Log::channel('daily')->debug('billdesk-response', $this->responseValues);
-            
+            Log::channel('daily')->debug('billdesk-response', json_decode($this->responseValues, true));
+
             $this->id                   = $this->responseValues['additional_info']['additional_info10'];
             $this->reference            = $this->responseValues['orderid'];
             $this->transaction_id       = $this->responseValues['transactionid'];
