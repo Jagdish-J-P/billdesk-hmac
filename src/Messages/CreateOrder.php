@@ -89,8 +89,9 @@ class CreateOrder extends Message implements Contract
             throw $e;
         }
 
-        $ext = last(explode('.', $merchant_logo = public_path(config('billdesk.merchant_logo'))));
+        //$ext = last(explode('.', $merchant_logo = url(config('billdesk.merchant_logo'))));
         //$logo = base64_encode(file_get_contents($merchant_logo));
+        $merchant_logo = url(config('billdesk.merchant_logo'));
 
         return [
             'create_order_response' => $response,
