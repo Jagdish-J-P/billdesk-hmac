@@ -45,35 +45,40 @@ class AuthorizationConfirmation extends Message implements Contract
             $this->transactionTimestamp = $this->responseValues['transaction_date'];
             $this->objectid             = $this->responseValues['objectid'];
             $this->transactionStatus    = $this->responseValues['auth_status'];
+            $this->mandate              = $this->responseValues['mandate'];
 
             $this->responseFormat = $this->saveTransaction();
 
             if ($this->transactionStatus == self::STATUS_SUCCESS_CODE) {
                 return [
-                    'status'          => self::STATUS_SUCCESS,
-                    'message'         => 'Payment is successfull',
-                    'transaction_id'  => $this->transaction_id,
-                    'reference_id'    => $this->reference,
-                    'response_format' => $this->responseFormat,
+                    'status'                => self::STATUS_SUCCESS,
+                    'message'               => 'Payment is successfull',
+                    'transaction_id'        => $this->transaction_id,
+                    'reference_id'          => $this->reference,
+                    'mandate'               => $this->mandate,
+                    'response_format'       => $this->responseFormat,
+                    'transaction_response'  => $this->list()->toJson(),
                 ];
             }
 
             if ($this->transactionStatus == self::STATUS_PENDING_CODE) {
                 return [
-                    'status'          => self::STATUS_PENDING,
-                    'message'         => 'Payment Transaction Pending',
-                    'transaction_id'  => $this->transaction_id,
-                    'reference_id'    => $this->reference,
-                    'response_format' => $this->responseFormat,
+                    'status'                => self::STATUS_PENDING,
+                    'message'               => 'Payment Transaction Pending',
+                    'transaction_id'        => $this->transaction_id,
+                    'reference_id'          => $this->reference,
+                    'response_format'       => $this->responseFormat,
+                    'transaction_response'  => $this->list()->toJson(),
                 ];
             }
 
             return [
-                'status'          => self::STATUS_FAILED,
-                'message'         => @Response::STATUS[$this->transactionStatus] ?? 'Payment Request Failed',
-                'transaction_id'  => $this->transaction_id,
-                'reference_id'    => $this->reference,
-                'response_format' => $this->responseFormat,
+                'status'                => self::STATUS_FAILED,
+                'message'               => @Response::STATUS[$this->transactionStatus] ?? 'Payment Request Failed',
+                'transaction_id'        => $this->transaction_id,
+                'reference_id'          => $this->reference,
+                'response_format'       => $this->responseFormat,
+                'transaction_response'  => $this->list()->toJson(),
             ];
         } catch (Exception $e) {
             return [
