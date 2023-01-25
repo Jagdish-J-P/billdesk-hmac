@@ -33,10 +33,10 @@ class AuthorizationConfirmation extends Message implements Contract
      */
     public function handle($options)
     {
-        $this->response          = @$options['transaction_response'];
-        $this->responseValues    = $this->verifyAndDecrypt($this->response);
-
         try {
+
+            $this->response          = @$options['transaction_response'];
+            $this->responseValues    = $this->verifyAndDecrypt($this->response);
 
             Log::channel('daily')->debug('billdesk-response', ['response' => $this->responseValues]);
 
