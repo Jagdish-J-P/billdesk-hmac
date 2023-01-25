@@ -18,10 +18,10 @@ class Response
     ];
 
     function __construct($responseStatus, $response, $bdTraceId, $bdTimestamp) {
-        $this->responseStatus = $responseStatus;
-        $this->response = (object)$response;        
-        $this->bdTraceId = $bdTraceId;
-        $this->bdTimestamp = $bdTimestamp;
+        $this->responseStatus   = $responseStatus;
+        $this->response         = $response;        
+        $this->bdTraceId        = $bdTraceId;
+        $this->bdTimestamp      = $bdTimestamp;
     }
 
     public function getResponseStatus() {

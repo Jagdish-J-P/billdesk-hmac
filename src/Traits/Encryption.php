@@ -30,6 +30,6 @@ trait Encryption
             throw new SignatureVerificationException("Failed to verify signature");
         }
 
-        return json_decode($jws->getPayload(), true);
+        return json_decode($jws->getPayload());
     }
 }

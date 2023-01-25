@@ -39,13 +39,13 @@ class AuthorizationConfirmation extends Message implements Contract
 
             Log::channel('daily')->debug('billdesk-response', $this->responseValues);
 
-            $this->id                   = $this->responseValues['additional_info']['additional_info10'];
-            $this->reference            = $this->responseValues['orderid'];
-            $this->transaction_id       = $this->responseValues['transactionid'];
-            $this->transactionTimestamp = $this->responseValues['transaction_date'];
-            $this->objectid             = $this->responseValues['objectid'];
-            $this->transactionStatus    = $this->responseValues['auth_status'];
-            $this->mandate              = $this->responseValues['mandate'];
+            $this->id                   = $this->responseValues->additional_info->additional_info10;
+            $this->reference            = $this->responseValues->orderid;
+            $this->transaction_id       = $this->responseValues->transactionid;
+            $this->transactionTimestamp = $this->responseValues->transaction_date;
+            $this->objectid             = $this->responseValues->objectid;
+            $this->transactionStatus    = $this->responseValues->auth_status;
+            $this->mandate              = $this->responseValues->mandate;
 
             $this->responseFormat = $this->saveTransaction();
 
