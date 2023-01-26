@@ -4,7 +4,7 @@ namespace App\Http\Controllers\BilldeskHmac;
 
 use App\Http\Controllers\Controller as BaseController;
 use JagdishJP\BilldeskHmac\Facades\BilldeskHmac;
-use JagdishJP\BilldeskHmac\Http\Requests\AuthorizationConfirmation as Request;
+use JagdishJP\BilldeskHmac\Http\Requests\TransactionConfirmation as Request;
 
 class Controller extends BaseController
 {

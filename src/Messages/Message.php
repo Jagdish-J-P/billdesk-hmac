@@ -23,10 +23,6 @@ class Message
 {
     use Encryption;
 
-    public const TYPE_FIELD_1 = 'R';
-
-    public const TYPE_FIELD_2 = 'F';
-
     public const NA_FIELD     = 'NA';
 
     /** Transaction Id For Each Payment */

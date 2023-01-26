@@ -2,12 +2,14 @@
 
 namespace JagdishJP\BilldeskHmac\Messages;
 
+use Carbon\Carbon;
 use Exception;
-use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use JagdishJP\BilldeskHmac\Constant\Response;
 use JagdishJP\BilldeskHmac\Contracts\Message as Contract;
 use JagdishJP\BilldeskHmac\Models\Transaction;
 use JagdishJP\BilldeskHmac\Traits\Encryption;
@@ -15,10 +17,6 @@ use JagdishJP\BilldeskHmac\Traits\Encryption;
 class TransactionEnquiry extends Message implements Contract
 {
     use Encryption;
-
-    public const REQUEST_TYPE = '0122';
-
-    public const RESPONSE_TYPE = '0130';
 
     public const STATUS_SUCCESS = 'succeeded';
 
@@ -57,7 +55,53 @@ class TransactionEnquiry extends Message implements Contract
 
         $this->reference = $data['reference_id'];
 
-        return $this->api($this->url, $this->format())->getResponse();
+        $response = $this->api($this->url, $this->format());
+
+        $this->response = $response->getResponse();
+
+        if ($response->getResponseStatus() != 200) {
+            Log::channel('daily')->debug('billdesk-status-response', ['response' => $this->response]);
+
+            throw new Exception($this->response->message);
+        }
+
+        $this->transaction_id     = $this->response->transactionid;
+        $this->transactionStatus  = $this->response->auth_status;
+        $this->transaction_date   = Carbon::parse($this->response->transaction_date);
+
+        $this->saveTransaction();
+
+        if ($this->transactionStatus == self::STATUS_SUCCESS_CODE) {
+
+            return [
+                'status'            => self::STATUS_SUCCESS,
+                'message'           => 'Payment Transaction Success',
+                'status_response'   => $this->response,
+                'reference_id'      => $this->reference,
+                'transaction_id'    => $this->transaction_id,
+                'transaction_date'  => $this->transaction_date,
+            ];
+        }
+
+        if ($this->transactionStatus == self::STATUS_PENDING_CODE) {
+            return [
+                'status'                => self::STATUS_PENDING,
+                'message'               => 'Payment Transaction Pending',
+                'status_response'       => $this->response,
+                'reference_id'          => $this->reference,
+                'transaction_id'        => $this->transaction_id,
+                'transaction_date'      => $this->transaction_date,
+            ];
+        }
+
+        return [
+            'status'                => self::STATUS_FAILED,
+            'message'               => @Response::STATUS[$this->transactionStatus] ?? $this->response->transaction_error_desc ?? 'Payment Request Failed',
+            'status_response'       => $this->response,
+            'reference_id'          => $this->reference,
+            'transaction_id'        => $this->transaction_id,
+            'transaction_date'      => $this->transaction_date,
+        ];
     }
 
 
@@ -85,28 +129,6 @@ class TransactionEnquiry extends Message implements Contract
     }
 
     /**
-     * Format data for checksum.
-     *
-     * @return string
-     */
-    public function responseFormat()
-    {
-        return $this->responseList()->except('CheckSum')->join('|');
-    }
-
-    /**
-     * returns collection of all fields.
-     *
-     * @return collection
-     */
-    public function responseList()
-    {
-        $responseValues = explode('|', $this->response);
-
-        return collect(array_combine($this->queryResponseKeys, $responseValues));
-    }
-
-    /**
      * Save response to transaction.
      *
      * @return string initiated from
@@ -117,7 +139,7 @@ class TransactionEnquiry extends Message implements Contract
 
         $transaction->transaction_id     = $this->transaction_id;
         $transaction->transaction_status = $this->transactionStatus;
-        $transaction->response_payload   = $this->responseList()->toJson();
+        $transaction->response_payload   = collect($this->response)->toJson();
         $transaction->save();
 
         return $transaction->response_format;
