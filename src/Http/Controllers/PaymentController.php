@@ -9,7 +9,7 @@ use JagdishJP\BilldeskHmac\Messages\CreateOrder;
 class PaymentController extends Controller
 {
     /**
-     * Initiate the request authorization message to FPX.
+     * Initiate the request authorization message to BillDesk.
      *
      * @param Request $request
      *

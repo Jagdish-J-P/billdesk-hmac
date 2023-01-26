@@ -3,13 +3,15 @@
 namespace App\Http\Controllers\BilldeskHmac;
 
 use App\Http\Controllers\Controller as BaseController;
+use Exception;
+use Illuminate\Http\Request;
 use JagdishJP\BilldeskHmac\Facades\BilldeskHmac;
-use JagdishJP\BilldeskHmac\Http\Requests\TransactionConfirmation as Request;
+use JagdishJP\BilldeskHmac\Http\Requests\TransactionConfirmationRequest;
 
 class Controller extends BaseController
 {
     /**
-     * Initiate the request authorization message to FPX.
+     * Initiate the request authorization message to BillDesk.
      *
      * @param Request $request
      *
@@ -23,13 +25,32 @@ class Controller extends BaseController
     }
 
     /**
-     * Initiate the request authorization message to FPX.
+     * Initiate the request authorization message to BillDesk.
      *
      * @param Request $request
      *
      * @return \Illuminate\Http\Response
      */
-    public function handle(Request $request)
+    public function status(Request $request)
+    {
+        try{
+            $response = BilldeskHmac::getTransactionStatus($request->reference_id);
+
+            return redirect()->back();
+        }
+        catch(Exception $e) {
+            return redirect()->back()->withErrors($e->getMessage());
+        }
+    }
+
+    /**
+     * Initiate the request authorization message to BillDesk.
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function beginTransaction(Request $request)
     {
         return view('billdesk-hmac::redirect_to_bank', [
             'request' => BilldeskHmac::createOrder($request->all()),
@@ -41,7 +62,7 @@ class Controller extends BaseController
      *
      * @return Response
      */
-    public function callback(Request $request)
+    public function callback(TransactionConfirmationRequest $request)
     {
         $response = $request->handle();
 
@@ -57,7 +78,7 @@ class Controller extends BaseController
      *
      * @return string
      */
-    public function webhook(Request $request)
+    public function webhook(TransactionConfirmationRequest $request)
     {
         $response = $request->handle();
 
