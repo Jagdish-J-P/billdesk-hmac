@@ -35,20 +35,27 @@ class AuthorizationConfirmation extends Message implements Contract
     {
         try {
 
-            $this->response          = @$options['transaction_response'];
+            $this->response          = @$options['transaction_response'] ?? @$options['encrypted_response'];
             $this->responseValues    = $this->verifyAndDecrypt($this->response);
-
             Log::channel('daily')->debug('billdesk-response', ['response' => $this->responseValues]);
+            
+            if (isset($this->responseValues->orderid)) {
 
-            $this->id                   = $this->responseValues->additional_info->additional_info10;
-            $this->reference            = $this->responseValues->orderid;
-            $this->transaction_id       = $this->responseValues->transactionid;
-            $this->transaction_date     = Carbon::parse($this->responseValues->transaction_date);
-            $this->objectid             = $this->responseValues->objectid;
-            $this->transactionStatus    = $this->responseValues->auth_status;
-            $this->mandate              = $this->responseValues->mandate ?? null;
+                $this->id                   = $this->responseValues->additional_info->additional_info10;
+                $this->reference            = $this->responseValues->orderid;
+                $this->transaction_id       = $this->responseValues->transactionid;
+                $this->transaction_date     = Carbon::parse($this->responseValues->transaction_date);
+                $this->objectid             = $this->responseValues->objectid;
+                $this->transactionStatus    = $this->responseValues->auth_status;
+                $this->mandate              = $this->responseValues->mandate ?? null;
 
-            $this->responseFormat = $this->saveTransaction();
+                $this->responseFormat = $this->saveTransaction();
+            }
+            else {
+                $this->transactionStatus = @$options['status'] ?? '000';
+                $this->errorMessage = @$options['message'] ?? '000';
+            } 
+            
 
             if ($this->transactionStatus == self::STATUS_SUCCESS_CODE) {
                 return [
@@ -78,7 +85,7 @@ class AuthorizationConfirmation extends Message implements Contract
 
             return [
                 'status'                => self::STATUS_FAILED,
-                'message'               => @Response::STATUS[$this->transactionStatus] ?? 'Payment Request Failed',
+                'message'               => @Response::STATUS[$this->transactionStatus] ?? $this->errorMessage ?? 'Payment Request Failed',
                 'transaction_id'        => $this->transaction_id,
                 'transaction_date'      => $this->transaction_date,
                 'reference_id'          => $this->reference,
@@ -95,7 +102,7 @@ class AuthorizationConfirmation extends Message implements Contract
                 'reference_id'          => $this->reference,
                 'response_format'       => $this->responseFormat,
                 'mandate'               => $this->mandate ?? null,
-                'transaction_response'  => $this->list()->toJson(),
+                'transaction_response'  => null,
             ];
         }
     }

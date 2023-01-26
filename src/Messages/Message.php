@@ -5,6 +5,7 @@ namespace JagdishJP\BilldeskHmac\Messages;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Log;
 use JagdishJP\BilldeskHmac\Constant\Constants;
@@ -96,6 +97,7 @@ class Message
 
     /** Transaction response status sent by BILLDESK */
     public $transactionStatus;
+    public $errorMessage;
 
     /** Checksum key */
     public $checksumKey;
@@ -194,11 +196,20 @@ class Message
         ]);
 
         Log::channel('daily')->debug('api-log', ['url' => $url, 'request' => $request, 'headers' => $headers, 'token' => $token]);
+        
+        try{
+            $client        = new Client();
+            $request       = new Request("POST", $url, $headers, $token);
+            $response      = $client->send($request);
+            $responseToken = $response->getBody()->getContents();
+        }
+        catch(ClientException $e) {
+            $response = $e->getResponse();
 
-        $client = new Client();
-        $request = new Request("POST", $url, $headers, $token);
-        $response = $client->send($request);
-        $responseToken = $response->getBody()->getContents();
+            $arr = ['error' => $e->getMessage(), 'response' => $e->getResponse()->getBody()->getContents()];
+            Log::channel('daily')->debug('api-response', $arr);
+            $responseToken = $arr['response'];
+        }
 
         $responseBody = $this->verifyAndDecrypt($responseToken);
 

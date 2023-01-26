@@ -18,6 +18,10 @@
     <script>
         function launchSdk() {
 
+            var flow_type = 'payments';
+            @if(isset($request['mandateTokenId']))
+                flow_type = 'emandate';            
+            @endif
 
             var flow_config = {
                 merchantId: "{{ config('billdesk.merchant_id') }}",
@@ -40,7 +44,7 @@
                 responseHandler: responseHandler,
                 merchantLogo: "{{ $request['merchant_logo'] }}",
                 flowConfig: flow_config,
-                flowType: "payments"
+                flowType: flow_type
             }
 
             window.loadBillDeskSdk(config);

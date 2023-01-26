@@ -84,7 +84,7 @@ return [
     'retry_count' => env('BILLDESK_RETRY_COUNT', 3),
 
     // Debit Day
-    'debit_day' => env('BILLDESK_DEBIT_DAY', 6),
+    'debit_day' => env('BILLDESK_DEBIT_DAY', "6"),
     
     // Init Channel
     'init_channel' => env('BILLDESK_INIT_CHANNEL', 'internet'),
