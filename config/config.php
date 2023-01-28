@@ -104,7 +104,6 @@ return [
      *
      * each url is used for a specific request, please refer to documentation to learn more about when to use
      * each url.
-     *
      */
     'urls' => [
         'uat' => [
@@ -116,11 +115,10 @@ return [
             'list_mandate'        => 'https://pguat.billdesk.io/pgsi/v1_2/mandatetokens/list',
             'create_invoice'      => 'https://pguat.billdesk.io/pgsi/ve1_2/invoices/create',
             'get_invoice'         => 'https://pguat.billdesk.io/pgsi/ve1_2/invoices/get',
-            'create_transaction'  => 'https://pguat.billdesk.io/pgsi/ve1_2/transactions/create',
-            'get_transaction'     => 'https://pguat.billdesk.io/pgsi/ve1_2/transactions/get',
-            'create_refund'       => 'https://pguat.billdesk.io/pgsi/ve1_2/refunds/create',
-            'get_refund'          => 'https://pguat.billdesk.io/pgsi/ve1_2/refunds/get',
-            'transaction_enquiry' => 'https://uat.billdesk.com/jssdk/v1/dist/PGIQueryController',
+            'create_transaction'  => 'https://pguat.billdesk.io/payments/ve1_2/transactions/create',
+            'get_transaction'     => 'https://pguat.billdesk.io/payments/ve1_2/transactions/get',
+            'create_refund'       => 'https://pguat.billdesk.io/payments/ve1_2/refunds/create',
+            'get_refund'          => 'https://pguat.billdesk.io/payments/ve1_2/refunds/get',
         ],
         'production' => [
             'js_sdk'              => 'https://pay.billdesk.com/jssdk/v1/dist/',
@@ -131,11 +129,10 @@ return [
             'list_mandate'        => 'https://pay.billdesk.io/pgsi/v1_2/mandatetokens/list',
             'create_invoice'      => 'https://pay.billdesk.io/pgsi/ve1_2/invoices/create',
             'get_invoice'         => 'https://pay.billdesk.io/pgsi/ve1_2/invoices/get',
-            'create_transaction'  => 'https://pay.billdesk.io/pgsi/ve1_2/transactions/create',
-            'get_transaction'     => 'https://pay.billdesk.io/pgsi/ve1_2/transactions/get',
-            'create_refund'       => 'https://pay.billdesk.io/pgsi/ve1_2/refunds/create',
-            'get_refund'          => 'https://pay.billdesk.io/pgsi/ve1_2/refunds/get',
-            'transaction_enquiry' => 'https://pay.billdesk.com/jssdk/v1/dist/PGIQueryController',
+            'create_transaction'  => 'https://pay.billdesk.io/payments/ve1_2/transactions/create',
+            'get_transaction'     => 'https://pay.billdesk.io/payments/ve1_2/transactions/get',
+            'create_refund'       => 'https://pay.billdesk.io/payments/ve1_2/refunds/create',
+            'get_refund'          => 'https://pay.billdesk.io/payments/ve1_2/refunds/get',
         ],
     ],
 ];
