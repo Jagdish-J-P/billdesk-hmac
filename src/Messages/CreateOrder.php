@@ -162,7 +162,7 @@ class CreateOrder extends Message implements Contract
     {
         $transaction                  = new Transaction();
         $transaction->unique_id       = $this->id;
-        $transaction->reference_id    = $this->reference;
+        $transaction->reference_id    = $this->uatPrefix . $this->reference;
         $transaction->response_format = $this->responseFormat;
         $transaction->request_payload = $this->list()->toJson();
         $transaction->save();

@@ -65,42 +65,41 @@ class TransactionEnquiry extends Message implements Contract
             throw new Exception($this->response->message);
         }
 
-        $this->transaction_id     = $this->response->transactionid;
-        $this->transactionStatus  = $this->response->auth_status;
+        $this->transaction_id     = $this->response->transactionid ?? null;
+        $this->transactionStatus  = $this->response->auth_status ?? null;
         $this->transaction_date   = Carbon::parse($this->response->transaction_date);
-
         $this->saveTransaction();
 
         if ($this->transactionStatus == self::STATUS_SUCCESS_CODE) {
 
             return [
-                'status'            => self::STATUS_SUCCESS,
-                'message'           => 'Payment Transaction Success',
-                'status_response'   => $this->response,
-                'reference_id'      => $this->reference,
-                'transaction_id'    => $this->transaction_id,
-                'transaction_date'  => $this->transaction_date,
+                'status'                => self::STATUS_SUCCESS,
+                'message'               => 'Payment Transaction Success',
+                'transaction_response'  => $this->response,
+                'reference_id'          => $this->reference,
+                'transaction_id'        => $this->transaction_id ?? null,
+                'transaction_date'      => $this->transaction_date ?? null,
             ];
         }
 
         if ($this->transactionStatus == self::STATUS_PENDING_CODE) {
             return [
-                'status'                => self::STATUS_PENDING,
-                'message'               => 'Payment Transaction Pending',
-                'status_response'       => $this->response,
-                'reference_id'          => $this->reference,
-                'transaction_id'        => $this->transaction_id,
-                'transaction_date'      => $this->transaction_date,
+                'status'                    => self::STATUS_PENDING,
+                'message'                   => 'Payment Transaction Pending',
+                'transaction_response'      => $this->response,
+                'reference_id'              => $this->reference,
+                'transaction_id'            => $this->transaction_id ?? null,
+                'transaction_date'          => $this->transaction_date ?? null,
             ];
         }
 
         return [
-            'status'                => self::STATUS_FAILED,
-            'message'               => @Response::STATUS[$this->transactionStatus] ?? $this->response->transaction_error_desc ?? 'Payment Request Failed',
-            'status_response'       => $this->response,
-            'reference_id'          => $this->reference,
-            'transaction_id'        => $this->transaction_id,
-            'transaction_date'      => $this->transaction_date,
+            'status'                    => self::STATUS_FAILED,
+            'message'                   => @Response::STATUS[$this->transactionStatus] ?? $this->response->transaction_error_desc ?? 'Payment Request Failed',
+            'transaction_response'      => $this->response,
+            'reference_id'              => $this->reference,
+            'transaction_id'            => $this->transaction_id ?? null,
+            'transaction_date'          => $this->transaction_date ?? null,
         ];
     }
 
