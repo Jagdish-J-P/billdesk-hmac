@@ -4,6 +4,7 @@ namespace JagdishJP\BilldeskHmac;
 
 use App\Models\Order;
 use JagdishJP\BilldeskHmac\Messages\CreateOrder;
+use JagdishJP\BilldeskHmac\Messages\RefundOrder;
 use JagdishJP\BilldeskHmac\Messages\TransactionEnquiry;
 
 class BilldeskHmac
@@ -31,5 +32,17 @@ class BilldeskHmac
     {
         return (new TransactionEnquiry())->handle(compact('reference_id'));
 
+    }
+
+    /**
+     * Refund Order.
+     *
+     * @param array $payload 
+     *
+     * @return array
+     */
+    public static function refundOrder(array $payload)
+    {
+        return (new RefundOrder())->handle($payload);
     }
 }

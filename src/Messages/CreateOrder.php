@@ -49,7 +49,6 @@ class CreateOrder extends Message implements Contract
             'settlement_lob'     => 'nullable',
             'init_channel'       => 'nullable',
             'subscription_refid' => 'nullable',
-            'reference_id'       => 'nullable',
             'mandate_required'   => 'required',
             'amount'             => 'required_if:mandate_required,N',
         ])->validate();
