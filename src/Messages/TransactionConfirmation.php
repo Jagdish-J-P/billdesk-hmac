@@ -134,11 +134,12 @@ class TransactionConfirmation extends Message implements Contract
      */
     public function saveTransaction()
     {
-        $transaction = Transaction::where(['unique_id' => $this->id])->firstOrNew();
+        $transaction = Transaction::where('request_type', 'transaction')->where(['unique_id' => $this->id])->firstOrNew();
 
-        $transaction->reference_id = $this->reference;
-        $transaction->request_payload ??= '';
-        $transaction->response_format ??= '';
+        $transaction->request_type       = 'transaction';
+        $transaction->reference_id       = $this->reference;
+        $transaction->request_payload    ??= '';
+        $transaction->response_format    ??= '';
         $transaction->unique_id          = $this->id;
         $transaction->transaction_id     = $this->transaction_id;
         $transaction->transaction_status = $this->transactionStatus;

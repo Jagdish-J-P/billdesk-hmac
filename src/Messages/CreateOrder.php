@@ -160,6 +160,7 @@ class CreateOrder extends Message implements Contract
     public function saveTransaction()
     {
         $transaction                  = new Transaction();
+        $transaction->request_type    = 'transaction';
         $transaction->unique_id       = $this->id;
         $transaction->reference_id    = $this->uatPrefix . $this->reference;
         $transaction->response_format = $this->responseFormat;

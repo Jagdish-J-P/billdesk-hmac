@@ -2,10 +2,10 @@
 
 namespace JagdishJP\BilldeskHmac;
 
-use App\Models\Order;
 use JagdishJP\BilldeskHmac\Messages\CreateOrder;
+use JagdishJP\BilldeskHmac\Messages\RefundEnquiry;
 use JagdishJP\BilldeskHmac\Messages\RefundOrder;
-use JagdishJP\BilldeskHmac\Messages\TransactionEnquiry;
+use JagdishJP\BilldeskHmac\Messages\TransactionStatus;
 
 class BilldeskHmac
 {
@@ -30,7 +30,7 @@ class BilldeskHmac
      */
     public static function getTransactionStatus(string $reference_id)
     {
-        return (new TransactionEnquiry())->handle(compact('reference_id'));
+        return (new TransactionStatus())->handle(compact('reference_id'));
 
     }
 
@@ -44,5 +44,29 @@ class BilldeskHmac
     public static function refundOrder(array $payload)
     {
         return (new RefundOrder())->handle($payload);
+    }
+
+    /**
+     * Refund Order Status.
+     *
+     * @param array $payload 
+     *
+     * @return array
+     */
+    public static function refundOrderStatus(array $payload)
+    {
+        return (new RefundEnquiry())->handle($payload);
+    }
+
+    /**
+     * Refund Order Status.
+     *
+     * @param array $payload 
+     *
+     * @return array
+     */
+    public static function decrypt(string $response)
+    {
+        return (new RefundEnquiry())->verifyAndDecrypt($response);
     }
 }
