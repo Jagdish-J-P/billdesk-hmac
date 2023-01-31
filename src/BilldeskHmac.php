@@ -3,6 +3,8 @@
 namespace JagdishJP\BilldeskHmac;
 
 use JagdishJP\BilldeskHmac\Messages\CreateOrder;
+use JagdishJP\BilldeskHmac\Messages\InvoiceCreate;
+use JagdishJP\BilldeskHmac\Messages\InvoiceGet;
 use JagdishJP\BilldeskHmac\Messages\MandateList;
 use JagdishJP\BilldeskHmac\Messages\MandateTokenCreate;
 use JagdishJP\BilldeskHmac\Messages\RefundEnquiry;
@@ -85,6 +87,30 @@ class BilldeskHmac
         $response['flowType'] = 'modify_mandate';
 
         return $response;
+    }
+
+    /**
+     * Creates Invoice.
+     *
+     * @param array $payload 
+     *
+     * @return array
+     */
+    public static function invoiceCreate(array $payload)
+    {
+        return (new InvoiceCreate())->handle($payload);
+    }
+
+    /**
+     * Get Invoice.
+     *
+     * @param array $payload 
+     *
+     * @return array
+     */
+    public static function invoiceGet(string $invoice_number)
+    {
+        return (new InvoiceGet())->handle(compact('invoice_number'));
     }
 
     /**
