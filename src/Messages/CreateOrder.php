@@ -49,16 +49,16 @@ class CreateOrder extends Message implements Contract
             'settlement_lob'     => 'nullable',
             'init_channel'       => 'nullable',
             'subscription_refid' => 'nullable',
+            'customer_refid'     => 'nullable',
             'mandate_required'   => 'required',
             'amount'             => 'required_if:mandate_required,N',
         ])->validate();
-
-        //$data['additional_info']['additional_info10'] = $this->id;
 
         $data['mandate']['mercid']              = $this->merchantId;
         $data['mandate']['currency']            = $this->currency;
         $data['mandate']['amount']              = number_format($data['mandate']['amount'], 2);
         $data['mandate']['subscription_refid']  = $data['subscription_refid'] ?? null;
+        $data['mandate']['customer_refid']      = $data['customer_refid'] ?? null;
         $data['mandate']['debit_day']           = $data['debit_day'] ?? config('billdesk.debit_day');
         $this->device['init_channel']           = $data['init_channel'] ?? config('billdesk.init_channel');
 
@@ -87,8 +87,6 @@ class CreateOrder extends Message implements Contract
                 throw new Exception($responseBody->message);
             }
 
-            $merchant_logo = url(config('billdesk.merchant_logo'));
-
             return [
                 'create_order_response' => $responseBody,
                 'reference_id'          => $responseBody->orderid,
@@ -96,7 +94,8 @@ class CreateOrder extends Message implements Contract
                 'authToken'             => $this->getHeaders($responseBody)->headers->authorization,
                 'url'                   => $this->getHeaders($responseBody, 'GET')->href,
                 'response_url'          => $this->ResponseUrl,
-                'merchant_logo'         => $merchant_logo,
+                'merchant_logo'         => url(config('billdesk.merchant_logo')),
+                'flowType'              => 'payments',
             ];
         }
         catch(Exception $e) {
@@ -107,16 +106,6 @@ class CreateOrder extends Message implements Contract
             throw $e;
         }
 
-    }
-    
-    /**
-     * Format data for checksum.
-     *
-     * @return object
-     */
-    private function getHeaders($response, $method = 'POST')
-    {
-        return collect($response->links)->filter(fn($arr) => $arr->method == $method)->first();
     }
 
     /**

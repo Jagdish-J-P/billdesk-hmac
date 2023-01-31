@@ -30,9 +30,10 @@ class TransactionConfirmationRequest extends FormRequest
     /**
      * Presist the data to the users table.
      */
-    public function handle()
+    public function handle($id)
     {
         $data = $this->all();
+        $data['id'] = $id;
 
         return (new TransactionConfirmation())->handle($data);
     }

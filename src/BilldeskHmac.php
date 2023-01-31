@@ -3,6 +3,8 @@
 namespace JagdishJP\BilldeskHmac;
 
 use JagdishJP\BilldeskHmac\Messages\CreateOrder;
+use JagdishJP\BilldeskHmac\Messages\MandateList;
+use JagdishJP\BilldeskHmac\Messages\MandateTokenCreate;
 use JagdishJP\BilldeskHmac\Messages\RefundEnquiry;
 use JagdishJP\BilldeskHmac\Messages\RefundOrder;
 use JagdishJP\BilldeskHmac\Messages\TransactionStatus;
@@ -31,7 +33,6 @@ class BilldeskHmac
     public static function getTransactionStatus(string $reference_id)
     {
         return (new TransactionStatus())->handle(compact('reference_id'));
-
     }
 
     /**
@@ -56,6 +57,34 @@ class BilldeskHmac
     public static function refundOrderStatus(array $payload)
     {
         return (new RefundEnquiry())->handle($payload);
+    }
+
+    /**
+     * Returns list of mandates.
+     *
+     * @param array $parameters 
+     *
+     * @return array
+     */
+    public static function mandateList(array $parameters)
+    {
+        return (new MandateList())->handle($parameters);
+    }
+
+    /**
+     * Returns list of mandates.
+     *
+     * @param array $parameters 
+     *
+     * @return array
+     */
+    public static function mandateDelete(array $parameters)
+    {
+        $response = (new MandateTokenCreate())->handle($parameters);
+
+        $response['flowType'] = 'modify_mandate';
+
+        return $response;
     }
 
     /**

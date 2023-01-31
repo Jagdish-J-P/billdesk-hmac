@@ -18,33 +18,31 @@
     <script>
         function launchSdk() {
 
-            var flow_type = 'payments';
-            @if(isset($request['mandateTokenId']))
-                flow_type = 'emandate';            
-            @endif
-
             var flow_config = {
                 merchantId: "{{ config('billdesk.merchant_id') }}",
-                bdOrderId: "{{ $request['bdOrderId'] }}",
                 authToken: "{{ $request['authToken'] }}",
-                @if(isset($request['mandateTokenId']))
-                mandateTokenId: "{{ $request['mandateTokenId'] }}",
+                @if (isset($request['bdOrderId']))
+                    bdOrderId: "{{ $request['bdOrderId'] }}",
+                @endif
+                @if (isset($request['mandateTokenId']))
+                    mandateTokenId: "{{ $request['mandateTokenId'] }}",
                 @endif
                 childWindow: {{ config('billdesk.child_window') ? 'true' : 'false' }},
-                returnUrl: "{{ !config('billdesk.child_window') ? $request['response_url'] : '<html><head><title>Billdesk</title></head><body onload=\"window.close();\"></body></html>' }}",
+                //returnUrl: "{{ !config('billdesk.child_window') ? $request['response_url'] : '<html><head><title>Billdesk</title></head><body onload=\"window.close();\"></body></html>' }}",
                 retryCount: {{ config('billdesk.retry_count') }}
             }
 
             var responseHandler = function(txn) {
-                console.log("callback received status:: ", txn.status)
-                console.log("callback received response:: ", txn.response)
+                if(txn.status != 200) {
+                    window.location = "{{ route('billdesk.payment.failed') }}";
+                }
             }
 
             var config = {
                 responseHandler: responseHandler,
                 merchantLogo: "{{ $request['merchant_logo'] }}",
                 flowConfig: flow_config,
-                flowType: flow_type
+                flowType: "{{ $request['flowType'] }}"
             }
 
             window.loadBillDeskSdk(config);

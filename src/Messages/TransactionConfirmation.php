@@ -41,7 +41,7 @@ class TransactionConfirmation extends Message implements Contract
             
             if (isset($this->responseValues->orderid)) {
 
-                $this->id                   = $this->responseValues->additional_info->additional_info10;
+                $this->id                   = @$options['id'];
                 $this->reference            = $this->responseValues->orderid;
                 $this->transaction_id       = $this->responseValues->transactionid;
                 $this->transaction_date     = Carbon::parse($this->responseValues->transaction_date);
