@@ -67,6 +67,7 @@ class Message
 
     /** Response Url */
     public $ResponseUrl;
+    public $MandateResponseUrl;
 
     /** Item Code */
     public $item_code;
@@ -153,7 +154,9 @@ class Message
         $this->jwsSerializer = new CompactSerializer();
 
         $this->item_code    = config('billdesk.item_code');
-        $this->ResponseUrl  = config('billdesk.response_url') . '/' . $this->id;
+
+        $this->ResponseUrl          = url(config('billdesk.response_path') . '/' . $this->id);
+        $this->MandateResponseUrl   = url(config('billdesk.mandate_response_path') . '/' . $this->id);
 
         $this->device = [
             'init_channel' => config('billdesk.init_channel'),

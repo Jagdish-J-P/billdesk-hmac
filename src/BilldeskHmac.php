@@ -5,7 +5,9 @@ namespace JagdishJP\BilldeskHmac;
 use JagdishJP\BilldeskHmac\Messages\CreateOrder;
 use JagdishJP\BilldeskHmac\Messages\InvoiceCreate;
 use JagdishJP\BilldeskHmac\Messages\InvoiceGet;
+use JagdishJP\BilldeskHmac\Messages\MandateDelete;
 use JagdishJP\BilldeskHmac\Messages\MandateList;
+use JagdishJP\BilldeskHmac\Messages\MandateModify;
 use JagdishJP\BilldeskHmac\Messages\MandateTokenCreate;
 use JagdishJP\BilldeskHmac\Messages\RefundEnquiry;
 use JagdishJP\BilldeskHmac\Messages\RefundOrder;
@@ -80,9 +82,25 @@ class BilldeskHmac
      *
      * @return array
      */
+    public static function mandateModify(array $parameters)
+    {
+        $response = (new MandateModify())->handle($parameters);
+
+        $response['flowType'] = 'modify_mandate';
+
+        return $response;
+    }
+
+    /**
+     * Returns list of mandates.
+     *
+     * @param array $parameters 
+     *
+     * @return array
+     */
     public static function mandateDelete(array $parameters)
     {
-        $response = (new MandateTokenCreate())->handle($parameters);
+        $response = (new MandateDelete())->handle($parameters);
 
         $response['flowType'] = 'modify_mandate';
 

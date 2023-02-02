@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use JagdishJP\BilldeskHmac\Contracts\Message as Contract;
 use JagdishJP\BilldeskHmac\Traits\Encryption;
 
-class MandateDelete extends Message implements Contract
+class MandateModify extends Message implements Contract
 {
     use Encryption;
 
@@ -91,7 +91,7 @@ class MandateDelete extends Message implements Contract
             'ru'                 => $this->MandateResponseUrl,
             'device'             => $this->device,
             'currency'           => $this->currency,
-            'action'             => 'delete',
+            'action'             => 'modify',
         ]);
     }
 

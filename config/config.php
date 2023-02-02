@@ -38,32 +38,25 @@ return [
     'merchant_logo' => env('BILLDESK_MERCHANT_LOGO'),
 
     /*
-     * Response URL used by BillDesk to direct the user back to your platform after a transaction is completed
-     *
-     * Example: https://localhost.test/billdesk/payment/callback
-     */
-    'response_url' => env('BILLDESK_RESPONSE_URL'),
-
-    /*
      * The response url path without the domain and scheme
      *
      * Example: billdesk/payment/callback
      */
-    'response_path' => env('BILLDESK_RESPONSE_PATH'),
+    'response_path' => env('BILLDESK_TRANSACTION_RESPONSE_PATH', 'billdesk/payment/callback'),
 
     /*
-     * host-to-host url used by BILLDESK to send direct messages to your app without the need for users actions
+     * The mandate response url path without the domain and scheme
      *
-     * Example: https://localhost.test/BillDesk/payment/webhook
+     * Example: billdesk/mandate/callback
      */
-    'webhook_url' => env('BILLDESK_WEBHOOK_URL'),
+    'mandate_response_path' => env('BILLDESK_MANDATE_RESPONSE_PATH', 'billdesk/mandate/callback'),
 
     /*
      * The indirect url path without the domain and scheme
      *
-     * Example: BillDesk/payment/webhook
+     * Example: billdesk/payment/webhook
      */
-    'webhook_path' => env('BILLDESK_WEBHOOK_PATH'),
+    'webhook_path' => env('BILLDESK_WEBHOOK_PATH', 'billdesk/payment/webhook'),
 
     // Middleware
     'middleware' => ['web'],
