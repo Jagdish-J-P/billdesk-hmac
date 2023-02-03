@@ -1,6 +1,6 @@
 # BillDesk Payment Gateway with HMAC Encryption implementation in Laravel
 
- Repository has been developed to integrate BillDesk Payment Gateway in Laravel.
+ Repository has been developed to integrate BillDesk Payment Gateway with HMAC Encryption in Laravel.
  
  This repository is currently in development. There might be some exception.
  
