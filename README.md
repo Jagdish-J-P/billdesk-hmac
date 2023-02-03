@@ -21,23 +21,26 @@ php artisan billdesk:publish
 This will generate the following files
 
 - The config file with default setup for you to override `billdesk.php`
-- The controller that will receive payment response and any host-to-host events `Http/Controllers/Billdesk/Controller.php`
+- The controller that will receive payment response and any host-to-host events `Http/Controllers/BilldeskHmac/Controller.php`
 - The assets in public directory.
 - The view file with default html for you to override `payment.blade.php`. Note do not change form action URL `billdesk.payment.auth.request`.
 
 ## Setups
 
-1. Add your response urls and your Merchant Id, Security Id and Cheksum Key to the `.env` file.
+1. Add your response urls and your Merchant Id, Client Id and HMAC Key to the `.env` file.
 
 ```php
-BILLDESK_RESPONSE_PATH=billdesk/payment/callback
-BILLDESK_WEBHOOK_PATH=billdesk/payment/webhook
-BILLDESK_RESPONSE_URL="${APP_URL}/${BILLDESK_RESPONSE_PATH}"
-BILLDESK_WEBHOOK_URL="${APP_URL}/${BILLDESK_WEBHOOK_PATH}"
+BILLDESK_TRANSACTION_RESPONSE_PATH=billdesk/payments/transactions/callback
+BILLDESK_MANDATE_RESPONSE_PATH=billdesk/payments/mandates/callback
+BILLDESK_WEBHOOK_PATH=billdesk/payments/webhook
 
 BILLDESK_MERCHANT_ID=
 BILLDESK_CLIENT_ID=
 BILLDESK_HMAC_KEY=
+BILLDESK_MERCHANT_LOGO="${APP_URL}/assets/img/logo.jpg"
+BILLDESK_RETRY_COUNT=3
+BILLDESK_CHILD_WINDOW=false
+BILLDESK_ITEM_CODE=DIRECT
 BILLDESK_UAT_PREFIX="test-prefix"
 ```
 
@@ -51,9 +54,26 @@ php artisan migrate
 
 1. You can visit <a href='http://app.test/billdesk/initiate/payment'>http://app.test/billdesk/initiate/payment</a> for the payment flow demo of web integration.
 
-2. Handle the payment response in `Http/Controllers/Billdesk/Controller.php`
+2. Handle the payment response in `Http/Controllers/BilldeskHmac/Controller.php`
 
 ```php
+    /**
+     * This will be called after the user approve the mandate
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function mandateCallback(MandateModifyResponseRequest $request, $id = null)
+    {
+        $response = $request->handle($id);
+
+        if ($response['response_format'] == 'JSON') {
+            return response()->json(['response' => $response, 'billdesk_response' => $request->all()]);
+        }
+
+        dd($response, $request); // Remove this line and modify as per your needs.
+    }
+    
     /**
      * This will be called after the user approve the payment
      * on the bank side
@@ -67,6 +87,7 @@ php artisan migrate
 
         if ($response['response_format'] == 'JSON')
             return response()->json(['response' => $response, 'billdesk_response' => $request->all()]);
+
         dd($response, $request); // Remove this line and modify as per your needs.
         // Update your order status
     }
@@ -92,20 +113,20 @@ php artisan migrate
 3. Check Status of all pending transactions using command
 
 ```bash
-php artisan billdesk:payment-status
+php artisan billdesk:transaction-status
 ```
 
 4. Check Status of specific transaction using command pass comma saperated order reference ids.
 
 ```bash
-php artisan billdesk:payment-status reference_id1,reference_id2,reference_id3
+php artisan billdesk:transaction-status --reference_id=reference_id1 --reference_id=reference_id2 --reference_id=reference_id3
 ```
 
 5. Check transaction status from Controller
 
 ```php
 
-use JagdishJP/Billdesk/Billdesk;
+use JagdishJP\BilldeskHmac\Facades\BilldeskHmac;
 
 /**
  * Returns status of transaction
@@ -113,7 +134,7 @@ use JagdishJP/Billdesk/Billdesk;
  * @param string $reference_id reference order id
  * @return array
  */
-$status = Billdesk::getTransactionStatus($reference_id);
+$status = BilldeskHmac::getTransactionStatus($reference_id);
 ```
 
 You can also override `payment.blade.php` with your custom design to integrate with your layout. but do not change `name` attribute of html controls and `action` URL of form.

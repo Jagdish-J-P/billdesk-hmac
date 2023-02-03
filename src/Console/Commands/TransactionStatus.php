@@ -5,7 +5,7 @@ namespace JagdishJP\BilldeskHmac\Console\Commands;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
-use JagdishJP\BilldeskHmac\Billdesk;
+use JagdishJP\BilldeskHmac\Facades\BilldeskHmac;
 use JagdishJP\BilldeskHmac\Messages\TransactionEnquiry;
 use JagdishJP\BilldeskHmac\Models\Transaction;
 
@@ -16,7 +16,7 @@ class TransactionStatus extends Command
      *
      * @var string
      */
-    protected $signature = 'billdesk:transaction-status {reference_id? : Comma saperated Order Reference Id}';
+    protected $signature = 'billdesk:transaction-status {--reference_id=* : Order Reference Id}';
 
     /**
      * The console command description.
@@ -42,14 +42,14 @@ class TransactionStatus extends Command
      */
     public function handle()
     {
-        $reference_ids = $this->argument('reference_id');
+        $reference_ids = $this->option('reference_id');
 
-        if ($reference_ids) {
-            $reference_ids = explode(',', $reference_ids);
+        if (!empty($reference_ids)) {
             $reference_ids = Transaction::whereIn('reference_id', $reference_ids)->get('reference_id')->toArray();
-        }
-        else {
-            $reference_ids = Transaction::whereNull('transaction_status')->orWhere('transaction_status', TransactionEnquiry::STATUS_PENDING_CODE)->get('reference_id')->toArray();
+        } else {
+            $reference_ids = Transaction::whereNull('transaction_status')
+                ->orWhere('transaction_status', TransactionEnquiry::STATUS_PENDING_CODE)
+                ->get('reference_id')->toArray();
         }
 
         if ($reference_ids) {
@@ -57,7 +57,7 @@ class TransactionStatus extends Command
                 $bar = $this->output->createProgressBar(count($reference_ids));
                 $bar->start();
                 foreach ($reference_ids as $row) {
-                    $status[] = Billdesk::getTransactionStatus($row['reference_id']);
+                    $status[] = BilldeskHmac::getTransactionStatus($row['reference_id']);
                 }
 
                 $this->newLine();
@@ -67,15 +67,13 @@ class TransactionStatus extends Command
                 $this->newLine();
 
                 $bar->finish();
-            }
-            catch (Exception $e) {
+            } catch (Exception $e) {
                 $this->error($e->getMessage());
                 logger('Transaction Status', [
                     'message' => $e->getMessage(),
                 ]);
             }
-        }
-        else {
+        } else {
             $this->error('There is no Pending transactions.');
             logger('Transaction Status', [
                 'message' => 'There is no Pending transactions.',
