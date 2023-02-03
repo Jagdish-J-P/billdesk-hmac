@@ -6,7 +6,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use JagdishJP\BilldeskHmac\Facades\BilldeskHmac;
-use JagdishJP\BilldeskHmac\Messages\TransactionEnquiry;
+use JagdishJP\BilldeskHmac\Messages\TransactionStatus as MessagesTransactionStatus;
 use JagdishJP\BilldeskHmac\Models\Transaction;
 
 class TransactionStatus extends Command
@@ -42,13 +42,14 @@ class TransactionStatus extends Command
      */
     public function handle()
     {
+
         $reference_ids = $this->option('reference_id');
 
         if (!empty($reference_ids)) {
             $reference_ids = Transaction::whereIn('reference_id', $reference_ids)->get('reference_id')->toArray();
         } else {
             $reference_ids = Transaction::whereNull('transaction_status')
-                ->orWhere('transaction_status', TransactionEnquiry::STATUS_PENDING_CODE)
+                ->orWhere('transaction_status', MessagesTransactionStatus::STATUS_PENDING_CODE)
                 ->get('reference_id')->toArray();
         }
 
@@ -56,17 +57,28 @@ class TransactionStatus extends Command
             try {
                 $bar = $this->output->createProgressBar(count($reference_ids));
                 $bar->start();
-                foreach ($reference_ids as $row) {
-                    $status[] = BilldeskHmac::getTransactionStatus($row['reference_id']);
+                foreach ($reference_ids as $key => $row) {
+                    try {
+                        $status[] = BilldeskHmac::getTransactionStatus($row['reference_id']);
+                        logger('Transaction Status: reference_id-' . $row['reference_id'], $status[$key]);
+                    } catch (Exception $e) {
+                        $status[$key]['status'] = 'error';
+                        $status[$key]['message'] = $e->getMessage();
+                        $status[$key]['transaction_response'] = '-';
+                        $status[$key]['reference_id'] = '-';
+                        $status[$key]['transaction_id'] = '-';
+                        $status[$key]['transaction_date'] = '-';
+                    }
+                    $bar->advance();
                 }
-
-                $this->newLine();
-                $this->newLine();
-
-                $this->table(collect(Arr::first($status))->keys()->toArray(), $status);
-                $this->newLine();
-
                 $bar->finish();
+
+                $this->newLine();
+                $this->newLine();
+
+                $this->table(collect(Arr::first($status))->keys()->toArray(), $this->stringify($status));
+                $this->newLine();
+                $this->info("Please see log for detailed info.");
             } catch (Exception $e) {
                 $this->error($e->getMessage());
                 logger('Transaction Status', [
@@ -79,5 +91,19 @@ class TransactionStatus extends Command
                 'message' => 'There is no Pending transactions.',
             ]);
         }
+    }
+
+    protected function stringify($arr)
+    {
+        $resultArray = [];
+        foreach ($arr as $array) {
+            foreach ($array as $key => $value) {
+                $temp[$key] = (is_array($value) || is_object($value)) ? 'object[]' : $value;
+            }
+            $resultArray[] = $temp;
+        }
+
+        unset($temp);
+        return $resultArray;
     }
 }
