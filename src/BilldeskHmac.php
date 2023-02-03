@@ -11,6 +11,7 @@ use JagdishJP\BilldeskHmac\Messages\MandateModify;
 use JagdishJP\BilldeskHmac\Messages\MandateTokenCreate;
 use JagdishJP\BilldeskHmac\Messages\RefundEnquiry;
 use JagdishJP\BilldeskHmac\Messages\RefundOrder;
+use JagdishJP\BilldeskHmac\Messages\TransactionCreate;
 use JagdishJP\BilldeskHmac\Messages\TransactionStatus;
 
 class BilldeskHmac
@@ -129,6 +130,19 @@ class BilldeskHmac
     public static function invoiceGet(string $invoice_number)
     {
         return (new InvoiceGet())->handle(compact('invoice_number'));
+    }
+
+    
+    /**
+     * Creates Transaction for Invoice.
+     *
+     * @param array $payload 
+     *
+     * @return array
+     */
+    public static function transactionCreate(array $payload)
+    {
+        return (new TransactionCreate())->handle($payload);
     }
 
     /**

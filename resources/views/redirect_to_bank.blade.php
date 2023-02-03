@@ -28,17 +28,17 @@
                     mandateTokenId: "{{ $request['mandateTokenId'] }}",
                 @endif
                 childWindow: {{ config('billdesk.child_window') ? 'true' : 'false' }},
-                returnUrl: "{{ !config('billdesk.child_window') ? $request['response_url'] : '<html><head><title>Billdesk</title></head><body onload=\"window.close();\"></body></html>' }}",
+                //returnUrl: "{{ !config('billdesk.child_window') ? $request['response_url'] : '<html><head><title>Billdesk</title></head><body onload=\"window.location = "' . route('billdesk.payment.failed') . '"\"></body></html>' }}",
                 retryCount: {{ config('billdesk.retry_count') }}
             }
 
             var responseHandler = function(txn) {
-                debugger;
-                console.log(txn);
-                if(txn.status != 200) {
+                if (txn.status != 200) {
                     window.location = "{{ route('billdesk.payment.failed') }}";
                 } else {
-
+                    document.body.innerHTML =
+                        `<form id='billdeskForm' method='POST' action="{{ $request['response_url'] }}">\n ${Object.keys(txn.txnResponse).map(t=>`<input type="hidden" name='${t}' value='${txn.txnResponse[t]}'/> <br/>`).join("")}\n    </form>`;
+                    document.getElementById("billdeskForm").submit();
                 }
 
             }
