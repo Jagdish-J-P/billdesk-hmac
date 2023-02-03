@@ -57,8 +57,6 @@ class Controller extends BaseController
         $refund_data['txn_amount']            = $request->txn_amount;
 
         $response = BilldeskHmac::refundOrder($refund_data);
-
-        return view('refund-receipt', compact('response'));
     }
 
     /**
@@ -70,14 +68,7 @@ class Controller extends BaseController
      */
     public function status(Request $request)
     {
-        try {
-            $response = BilldeskHmac::getTransactionStatus($request->orderid);
-
-            return redirect()->back();
-        }
-        catch (Exception $e) {
-            return redirect()->back()->withErrors($e->getMessage());
-        }
+        $response = BilldeskHmac::getTransactionStatus($request->orderid);
     }
 
     /**
@@ -108,8 +99,6 @@ class Controller extends BaseController
         $invoice_request = $invoice_data = $request->all();
 
         $response = BilldeskHmac::invoiceCreate($invoice_request);
-
-        return redirect()->route('invoices.index')->withMessage('Invoice Created Successfully!!!');
     }
 
     /**
@@ -121,14 +110,21 @@ class Controller extends BaseController
      */
     public function invoiceStatus(Request $request)
     {
-        try {
-            $response = BilldeskHmac::invoiceGet($request->invoice_no);
+        $response = BilldeskHmac::invoiceGet($request->invoice_no);
+    }
 
-            return redirect()->back();
-        }
-        catch (Exception $e) {
-            return redirect()->back()->withErrors($e->getMessage());
-        }
+    /**
+     * Initiate payment transaction for invoce to BillDesk.
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function transactionCreate(Request $request)
+    {
+        $invoice_request = $request->all();
+
+        $response = BilldeskHmac::transactionCreate($invoice_request);
     }
 
     /**
@@ -140,8 +136,6 @@ class Controller extends BaseController
     {
         $response['status']  = 'cancelled';
         $response['message'] = 'Transaction Cancelled!!!';
-
-        return view('payment-receipt', compact('response'));
     }
 
     /**
