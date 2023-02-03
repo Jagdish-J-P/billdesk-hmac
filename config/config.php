@@ -9,7 +9,6 @@ return [
      */
     'merchant_id' => env('BILLDESK_MERCHANT_ID'),
 
-    
     /*
      * The Merchant Client ID
      *
@@ -17,7 +16,6 @@ return [
      */
     'client_id' => env('BILLDESK_CLIENT_ID'),
 
-    
     /*
      * The merchant HMAC Key
      *
@@ -25,16 +23,10 @@ return [
      */
     'hmac_key' => env('BILLDESK_HMAC_KEY'),
 
-    /**
-     * The UAT Prefix to identify test transactions
-     * 
-     */ 
+    // The UAT Prefix to identify test transactions
     'uat_prefix' => env('BILLDESK_UAT_PREFIX', ''),
 
-    /**
-     * The UAT Prefix to identify test transactions
-     * 
-     */ 
+    // The UAT Prefix to identify test transactions
     'merchant_logo' => env('BILLDESK_MERCHANT_LOGO'),
 
     /*
@@ -63,22 +55,22 @@ return [
 
     // Date Format
     'date_format' => 'c',
-    
+
     // Recurrence Rule
     'recurrence_rule' => 'on',
-    
+
     // Item Code
     'item_code' => env('BILLDESK_ITEM_CODE', 'DIRECT'),
-    
+
     // Child Window
     'child_window' => env('BILLDESK_CHILD_WINDOW', 'false'),
-    
+
     // Retry Count
     'retry_count' => env('BILLDESK_RETRY_COUNT', 3),
 
     // Debit Day
-    'debit_day' => env('BILLDESK_DEBIT_DAY', "6"),
-    
+    'debit_day' => env('BILLDESK_DEBIT_DAY', '6'),
+
     // Init Channel
     'init_channel' => env('BILLDESK_INIT_CHANNEL', 'internet'),
 

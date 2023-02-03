@@ -14,6 +14,8 @@ class Controller extends BaseController
      * Initiate the request authorization message to BillDesk.
      *
      * @param Request $request
+     * @param mixed $initiated_from
+     * @param mixed $test
      *
      * @return \Illuminate\Http\Response
      */
@@ -47,16 +49,15 @@ class Controller extends BaseController
      */
     public function refundOrder(Request $request)
     {
-
-        $refund_data['refund_reference_id']   = $request->refund_reference_id;
-        $refund_data['reference_id']          = $request->reference_id;
+        $refund_data['merc_refund_ref_no']    = $request->merc_refund_ref_no;
+        $refund_data['orderid']               = $request->orderid;
         $refund_data['transaction_id']        = $request->transaction_id;
         $refund_data['transaction_date']      = $request->transaction_date;
         $refund_data['refund_amount']         = $request->refund_amount;
         $refund_data['txn_amount']            = $request->txn_amount;
 
         $response = BilldeskHmac::refundOrder($refund_data);
-        
+
         return view('refund-receipt', compact('response'));
     }
 
@@ -69,12 +70,12 @@ class Controller extends BaseController
      */
     public function status(Request $request)
     {
-        try{
-            $response = BilldeskHmac::getTransactionStatus($request->reference_id);
+        try {
+            $response = BilldeskHmac::getTransactionStatus($request->orderid);
 
             return redirect()->back();
         }
-        catch(Exception $e) {
+        catch (Exception $e) {
             return redirect()->back()->withErrors($e->getMessage());
         }
     }
@@ -105,12 +106,11 @@ class Controller extends BaseController
     public function invoiceCreate(Request $request)
     {
         $invoice_request = $invoice_data = $request->all();
-        
+
         $response = BilldeskHmac::invoiceCreate($invoice_request);
 
         return redirect()->route('invoices.index')->withMessage('Invoice Created Successfully!!!');
     }
-
 
     /**
      * Initiate the request transaction status to BillDesk.
@@ -125,7 +125,8 @@ class Controller extends BaseController
             $response = BilldeskHmac::invoiceGet($request->invoice_no);
 
             return redirect()->back();
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             return redirect()->back()->withErrors($e->getMessage());
         }
     }
@@ -139,9 +140,10 @@ class Controller extends BaseController
     {
         $response['status']  = 'cancelled';
         $response['message'] = 'Transaction Cancelled!!!';
+
         return view('payment-receipt', compact('response'));
     }
-    
+
     /**
      * @param Request $request
      *

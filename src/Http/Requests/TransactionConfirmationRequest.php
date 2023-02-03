@@ -29,10 +29,12 @@ class TransactionConfirmationRequest extends FormRequest
 
     /**
      * Presist the data to the users table.
+     *
+     * @param mixed $id
      */
     public function handle($id)
     {
-        $data = $this->all();
+        $data       = $this->all();
         $data['id'] = $id;
 
         return (new TransactionConfirmation())->handle($data);

@@ -23,7 +23,9 @@ class MandateList extends Message implements Contract
     public $url;
 
     protected $subscription_reference;
+
     protected $from_date;
+
     protected $to_date;
 
     public function __construct()
@@ -44,18 +46,17 @@ class MandateList extends Message implements Contract
      */
     public function handle($options)
     {
-        
         $data = Validator::make($options, [
-            'customer_reference_id'      => 'nullable',
-            'subscription_reference_id'  => 'nullable',
+            'customer_refid'             => 'nullable',
+            'subscription_refid'         => 'nullable',
             'from_date'                  => 'nullable',
-            'to_date'                   => 'nullable',
+            'to_date'                    => 'nullable',
         ])->validate();
 
-        $this->reference                = $data['customer_reference_id'] ?? null;
-        $this->subscription_reference   = $data['subscription_reference_id'] ?? null;
-        $this->from_date                = $data['from_date'] ?? null;
-        $this->to_date                 = $data['to_date'] ?? null;
+        $this->reference                = $data['customer_refid']     ?? null;
+        $this->subscription_reference   = $data['subscription_refid'] ?? null;
+        $this->from_date                = $data['from_date']          ?? null;
+        $this->to_date                  = $data['to_date']            ?? null;
 
         $response = $this->api($this->url, $this->format());
 
@@ -68,7 +69,6 @@ class MandateList extends Message implements Contract
         }
 
         if (isset($this->response->objectid)) {
-
             return [
                 'status'    => self::STATUS_SUCCESS,
                 'message'   => 'Mandate retrived',
@@ -95,7 +95,7 @@ class MandateList extends Message implements Contract
             'customer_refid'     => $this->reference,
             'subscription_refid' => $this->subscription_reference,
             'from_date'          => $this->from_date,
-            'to_date'           => $this->to_date,
+            'to_date'            => $this->to_date,
         ]);
     }
 

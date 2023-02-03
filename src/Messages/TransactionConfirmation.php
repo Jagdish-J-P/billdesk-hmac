@@ -34,13 +34,11 @@ class TransactionConfirmation extends Message implements Contract
     public function handle($options)
     {
         try {
-
             $this->response          = @$options['transaction_response'] ?? @$options['encrypted_response'];
             $this->responseValues    = $this->verifyAndDecrypt($this->response);
             Log::channel('daily')->debug('billdesk-response', ['response' => $this->responseValues]);
-            
-            if (isset($this->responseValues->orderid)) {
 
+            if (isset($this->responseValues->orderid)) {
                 $this->id                   = @$options['id'];
                 $this->reference            = $this->responseValues->orderid;
                 $this->transaction_id       = $this->responseValues->transactionid;
@@ -52,10 +50,9 @@ class TransactionConfirmation extends Message implements Contract
                 $this->responseFormat = $this->saveTransaction();
             }
             else {
-                $this->transactionStatus = @$options['status'] ?? '000';
-                $this->errorMessage = @$options['message'] ?? '000';
-            } 
-            
+                $this->transactionStatus = @$options['status']  ?? '000';
+                $this->errorMessage      = @$options['message'] ?? '000';
+            }
 
             if ($this->transactionStatus == self::STATUS_SUCCESS_CODE) {
                 return [
@@ -63,7 +60,7 @@ class TransactionConfirmation extends Message implements Contract
                     'message'               => 'Payment is successfull',
                     'transaction_id'        => $this->transaction_id,
                     'transaction_date'      => $this->transaction_date,
-                    'reference_id'          => $this->reference,
+                    'orderid'               => $this->reference,
                     'mandate'               => $this->mandate ?? null,
                     'response_format'       => $this->responseFormat,
                     'transaction_response'  => $this->list()->toJson(),
@@ -76,7 +73,7 @@ class TransactionConfirmation extends Message implements Contract
                     'message'               => 'Payment Transaction Pending',
                     'transaction_id'        => $this->transaction_id,
                     'transaction_date'      => $this->transaction_date,
-                    'reference_id'          => $this->reference,
+                    'orderid'               => $this->reference,
                     'response_format'       => $this->responseFormat,
                     'mandate'               => $this->mandate ?? null,
                     'transaction_response'  => $this->list()->toJson(),
@@ -88,18 +85,19 @@ class TransactionConfirmation extends Message implements Contract
                 'message'               => @Response::STATUS[$this->transactionStatus] ?? $this->errorMessage ?? 'Payment Request Failed',
                 'transaction_id'        => $this->transaction_id,
                 'transaction_date'      => $this->transaction_date,
-                'reference_id'          => $this->reference,
+                'orderid'               => $this->reference,
                 'response_format'       => $this->responseFormat,
                 'mandate'               => $this->mandate ?? null,
                 'transaction_response'  => $this->list()->toJson(),
             ];
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             return [
                 'status'                => self::STATUS_FAILED,
                 'message'               => $e->getMessage(),
                 'transaction_id'        => $this->transaction_id,
                 'transaction_date'      => $this->transaction_date,
-                'reference_id'          => $this->reference,
+                'orderid'               => $this->reference,
                 'response_format'       => $this->responseFormat,
                 'mandate'               => $this->mandate ?? null,
                 'transaction_response'  => null,
@@ -137,7 +135,7 @@ class TransactionConfirmation extends Message implements Contract
         $transaction = Transaction::where('request_type', 'transaction')->where(['unique_id' => $this->id])->firstOrNew();
 
         $transaction->request_type       = 'transaction';
-        $transaction->reference_id       = $this->reference;
+        $transaction->orderid            = $this->reference;
         $transaction->request_payload    ??= '';
         $transaction->response_format    ??= '';
         $transaction->unique_id          = $this->id;

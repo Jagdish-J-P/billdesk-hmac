@@ -16,7 +16,7 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->string('unique_id')->comment('Unique auto generated reference Id');
-            $table->string('reference_id')->comment('Unique Order no/Reference id');
+            $table->string('orderid')->comment('Unique Order no/Reference id');
             $table->string('transaction_id')->nullable()->comment('Transaction id returned by billdesk');
             $table->string('transaction_status')->default('0002')->comment('Transaction status code, default Pending');
             $table->text('request_payload')->comment('Request data sent to billdesk');

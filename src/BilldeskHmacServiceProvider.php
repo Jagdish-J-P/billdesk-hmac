@@ -19,7 +19,7 @@ class BilldeskHmacServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'billdesk');
-        $this->app->bind('billdeskhmac', fn($app) => new BilldeskHmac());
+        $this->app->bind('billdeskhmac', fn ($app) => new BilldeskHmac());
     }
 
     /**
@@ -38,18 +38,19 @@ class BilldeskHmacServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'billdesk-hmac');
 
         $this->configurePublish();
-
     }
 
-    public function createBladeDirectives() {
-        
+    public function createBladeDirectives()
+    {
         Blade::directive('billdesksdk', function () {
             $js_sdk = app()->isLocal() ? Config::get('billdesk.urls.uat.js_sdk') : Config::get('billdesk.urls.production.js_sdk');
+
             return "<script type='module' src='{$js_sdk}billdesksdk/billdesksdk.esm.js'></script>
             <script nomodule='' src='{$js_sdk}billdesksdk.js'></script>
             <link href='{$js_sdk}billdesksdk/billdesksdk.css' rel='stylesheet'>";
         });
     }
+
     public function configureRoutes()
     {
         Route::group([

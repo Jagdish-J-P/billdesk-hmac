@@ -22,7 +22,9 @@ class MandateTokenCreate extends Message implements Contract
 
     /** Message Url */
     public $url;
+
     protected $customer_reference;
+
     protected $subscription_reference;
 
     public function __construct()
@@ -44,13 +46,13 @@ class MandateTokenCreate extends Message implements Contract
     public function handle($options)
     {
         $data = Validator::make($options, [
-            'customer_reference_id'      => 'nullable',
-            'subscription_reference_id'  => 'nullable',
+            'customer_refid'      => 'nullable',
+            'subscription_refid'  => 'nullable',
         ])->validate();
 
-        $this->customer_reference       = $data['customer_reference_id'] ?? null;
-        $this->subscription_reference   = $data['subscription_reference_id'] ?? null;
-        
+        $this->customer_reference       = $data['customer_refid']     ?? null;
+        $this->subscription_reference   = $data['subscription_refid'] ?? null;
+
         $response = $this->api($this->url, $this->format());
 
         $this->response = $response->getResponse();
@@ -64,7 +66,6 @@ class MandateTokenCreate extends Message implements Contract
         }
 
         if ($this->response->status == 'initiated') {
-
             return [
                 'status'          => self::STATUS_SUCCESS,
                 'message'         => 'Mandate token retrived',
@@ -97,7 +98,6 @@ class MandateTokenCreate extends Message implements Contract
             'ru'                 => $this->ResponseUrl,
             'device'             => $this->device,
             'currency'           => $this->currency,
-            'action'             => 'delete',
         ]);
     }
 
@@ -110,22 +110,24 @@ class MandateTokenCreate extends Message implements Contract
     {
         return $this->list()->toArray();
     }
-    
+
     /**
      * Save request to transaction.
      */
     public function saveTransaction()
     {
         $transaction = Transaction::where('request_type', 'mandate_token')->where(['unique_id' => $this->id])->firstOrNew();
-        
+
         $transaction->request_type    = 'mandate_token';
         $transaction->unique_id       = $this->id;
-        $transaction->reference_id    = $this->subscription_reference;
+        $transaction->orderid         = $this->subscription_reference;
         $transaction->response_format = $this->responseFormat ?? 'HTML';
         $transaction->request_payload = $this->list()->toJson();
-        if(isset($this->response)) {
+
+        if (isset($this->response)) {
             $transaction->request_payload = collect($this->response)->toJson();
         }
+
         $transaction->save();
     }
 }

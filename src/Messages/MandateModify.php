@@ -21,6 +21,7 @@ class MandateModify extends Message implements Contract
 
     /** Message Url */
     public $url;
+
     protected $mandateId;
 
     public function __construct()
@@ -41,7 +42,6 @@ class MandateModify extends Message implements Contract
      */
     public function handle($options)
     {
-
         $data = Validator::make($options, [
             'mandateid'      => 'nullable',
         ])->validate();
@@ -59,7 +59,6 @@ class MandateModify extends Message implements Contract
         }
 
         if ($this->response->status == 'initiated') {
-
             return [
                 'status'          => self::STATUS_SUCCESS,
                 'message'         => 'Mandate token retrived',
@@ -67,7 +66,7 @@ class MandateModify extends Message implements Contract
                 'mandateTokenId'  => $this->response->mandate_tokenid,
                 'authToken'       => $this->response->links[1]->headers->authorization,
                 'response_url'    => $this->MandateResponseUrl,
-                'merchant_logo'   => url(config('billdesk.merchant_logo')),
+                'merchant_logo'   => $this->merchant_logo,
             ];
         }
 

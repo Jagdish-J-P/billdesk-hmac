@@ -50,10 +50,10 @@ class TransactionStatus extends Message implements Contract
     public function handle($options)
     {
         $data = Validator::make($options, [
-            'reference_id'    => 'required',
+            'orderid'    => 'required',
         ])->validate();
 
-        $this->reference = $data['reference_id'];
+        $this->reference = $data['orderid'];
 
         $response = $this->api($this->url, $this->format());
 
@@ -66,18 +66,17 @@ class TransactionStatus extends Message implements Contract
         }
 
         $this->transaction_id     = $this->response->transactionid ?? null;
-        $this->transactionStatus  = $this->response->auth_status ?? null;
+        $this->transactionStatus  = $this->response->auth_status   ?? null;
         $this->transaction_date   = Carbon::parse($this->response->transaction_date);
         $this->saveTransaction();
 
         if ($this->transactionStatus == self::STATUS_SUCCESS_CODE) {
-
             return [
                 'status'                => self::STATUS_SUCCESS,
                 'message'               => 'Payment Transaction Success',
                 'transaction_response'  => $this->response,
-                'reference_id'          => $this->reference,
-                'transaction_id'        => $this->transaction_id ?? null,
+                'orderid'               => $this->reference,
+                'transaction_id'        => $this->transaction_id   ?? null,
                 'transaction_date'      => $this->transaction_date ?? null,
             ];
         }
@@ -87,8 +86,8 @@ class TransactionStatus extends Message implements Contract
                 'status'                    => self::STATUS_PENDING,
                 'message'                   => 'Payment Transaction Pending',
                 'transaction_response'      => $this->response,
-                'reference_id'              => $this->reference,
-                'transaction_id'            => $this->transaction_id ?? null,
+                'orderid'                   => $this->reference,
+                'transaction_id'            => $this->transaction_id   ?? null,
                 'transaction_date'          => $this->transaction_date ?? null,
             ];
         }
@@ -97,12 +96,11 @@ class TransactionStatus extends Message implements Contract
             'status'                    => self::STATUS_FAILED,
             'message'                   => @Response::STATUS[$this->transactionStatus] ?? $this->response->transaction_error_desc ?? 'Payment Request Failed',
             'transaction_response'      => $this->response,
-            'reference_id'              => $this->reference,
-            'transaction_id'            => $this->transaction_id ?? null,
+            'orderid'                   => $this->reference,
+            'transaction_id'            => $this->transaction_id   ?? null,
             'transaction_date'          => $this->transaction_date ?? null,
         ];
     }
-
 
     /**
      * returns collection of all fields.
@@ -134,7 +132,7 @@ class TransactionStatus extends Message implements Contract
      */
     public function saveTransaction()
     {
-        $transaction = Transaction::where('request_type', 'transaction')->where(['reference_id' => $this->reference])->first();
+        $transaction = Transaction::where('request_type', 'transaction')->where(['orderid' => $this->reference])->first();
 
         $transaction->request_type       = 'transaction';
         $transaction->transaction_id     = $this->transaction_id;

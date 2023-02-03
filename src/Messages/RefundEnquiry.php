@@ -16,9 +16,6 @@ class RefundEnquiry extends Message implements Contract
 {
     use Encryption;
 
-    /** Message Url */
-    public $url;
-
     public const STATUS_SUCCESS = 'refunded';
 
     public const STATUS_FAILED = 'failed';
@@ -28,6 +25,9 @@ class RefundEnquiry extends Message implements Contract
     public const STATUS_SUCCESS_CODE = '0699';
 
     public const STATUS_PENDING_CODE = '0002';
+
+    /** Message Url */
+    public $url;
 
     public function __construct()
     {
@@ -47,18 +47,17 @@ class RefundEnquiry extends Message implements Contract
      */
     public function handle($options)
     {
-
         $data = Validator::make($options, [
-            'refund_reference_id'   => 'required_if:refund_transaction_id,null',
-            'refund_transaction_id' => 'required_if:refund_reference_id,null',
+            'merc_refund_ref_no'   => 'required_if:refundid,null',
+            'refundid'             => 'required_if:merc_refund_ref_no,null',
         ])->validate();
 
         $this->responseFormat           = $data['response_format'] ?? 'HTML';
-        $this->refundReference          = $data['refund_reference_id'];
-        $this->refund_transaction_id    = $data['refund_transaction_id'];
-        
+        $this->refundReference          = $data['merc_refund_ref_no'];
+        $this->refundid                 = $data['refundid'];
+
         $this->payload              = $this->format();
-        
+
         try {
             $this->saveTransaction();
 
@@ -78,32 +77,32 @@ class RefundEnquiry extends Message implements Contract
                 return [
                     'status'                    => self::STATUS_SUCCESS,
                     'message'                   => $this->response->message,
-                    'refund_transaction_id'     => $this->response->refundid,
-                    'reference_id'              => $this->response->orderid,
+                    'refundid'                  => $this->response->refundid,
+                    'orderid'                   => $this->response->orderid,
                     'transaction_id'            => $this->response->transactionid,
                     'transaction_date'          => Carbon::parse($this->response->transaction_date),
                     'transaction_amount'        => $this->response->txn_amount,
                     'refund_amount'             => $this->response->refund_amount,
                     'refund_date'               => Carbon::parse($this->response->refund_date),
-                    'refund_reference_id'       => $this->response->merc_refund_ref_no,
+                    'merc_refund_ref_no'        => $this->response->merc_refund_ref_no,
                     'transaction_response'      => $this->response,
                 ];
             }
 
             if ($this->transactionStatus == self::STATUS_PENDING_CODE) {
                 $this->response->message    = 'Refund Request Initiated';
-                
+
                 return [
                     'status'                    => self::STATUS_PENDING,
                     'message'                   => $this->response->message,
-                    'refund_transaction_id'     => $this->response->refundid,
-                    'reference_id'              => $this->response->orderid,
+                    'refundid'                  => $this->response->refundid,
+                    'orderid'                   => $this->response->orderid,
                     'transaction_id'            => $this->response->transactionid,
                     'transaction_date'          => Carbon::parse($this->response->transaction_date),
                     'transaction_amount'        => $this->response->txn_amount,
                     'refund_amount'             => $this->response->refund_amount,
                     'refund_date'               => Carbon::parse($this->response->refund_date),
-                    'refund_reference_id'       => $this->response->merc_refund_ref_no,
+                    'merc_refund_ref_no'        => $this->response->merc_refund_ref_no,
                     'transaction_response'      => $this->response,
                 ];
             }
@@ -113,25 +112,25 @@ class RefundEnquiry extends Message implements Contract
             return [
                 'status'                    => self::STATUS_FAILED,
                 'message'                   => $this->response->message,
-                'refund_transaction_id'     => $this->response->refundid,
-                'reference_id'              => $this->response->orderid,
+                'refundid'                  => $this->response->refundid,
+                'orderid'                   => $this->response->orderid,
                 'transaction_id'            => $this->response->transactionid,
                 'transaction_date'          => Carbon::parse($this->response->transaction_date),
                 'transaction_amount'        => $this->response->txn_amount,
                 'refund_amount'             => $this->response->refund_amount,
                 'refund_date'               => Carbon::parse($this->response->refund_date),
-                'refund_reference_id'       => $this->response->merc_refund_ref_no,
+                'merc_refund_ref_no'        => $this->response->merc_refund_ref_no,
                 'transaction_response'      => $this->response,
             ];
-        } catch (Exception $e) {
-
+        }
+        catch (Exception $e) {
             Log::channel('daily')->debug('refund_order_status-payload', ['payload' => $this->payload]);
-            Log::channel('daily')->debug('refund_order_status-handle',  ['error' => $e->getMessage(), 'response' => $this->response ?? null]);
+            Log::channel('daily')->debug('refund_order_status-handle', ['error' => $e->getMessage(), 'response' => $this->response ?? null]);
 
             return [
                 'status'                    => self::STATUS_FAILED,
-                'reference_id'              => $this->reference,
-                'refund_reference_id'       => $this->refundReference,
+                'orderid'                   => $this->reference,
+                'merc_refund_ref_no'        => $this->refundReference,
                 'transaction_id'            => $this->transaction_id ?? null,
                 'transaction_amount'        => $this->amount,
                 'refund_amount'             => $this->refundAmount,
@@ -139,7 +138,7 @@ class RefundEnquiry extends Message implements Contract
                 'transaction_response'      => $responseBody ?? null,
                 'transaction_date'          => null,
                 'refund_date'               => null,
-                'refund_reference_id'       => null,
+                'merc_refund_ref_no'        => null,
             ];
         }
     }
@@ -163,7 +162,7 @@ class RefundEnquiry extends Message implements Contract
     {
         return collect([
             'mercid'             => $this->merchantId,
-            'refundid'           => $this->refund_transaction_id,
+            'refundid'           => $this->refundid,
             'merc_refund_ref_no' => $this->refundReference,
         ]);
     }
@@ -173,7 +172,7 @@ class RefundEnquiry extends Message implements Contract
      */
     public function saveTransaction()
     {
-        $transaction                        = Transaction::where('type', 'refund')->where('reference_id', $this->refundReference)->first();
+        $transaction                        = Transaction::where('type', 'refund')->where('orderid', $this->refundReference)->first();
         $transaction->transaction_status    = $this->transactionStatus ?? 'initiated';
         $transaction->request_type          = 'refund';
         $transaction->response_format       = $this->responseFormat;

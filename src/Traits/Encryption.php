@@ -6,12 +6,11 @@ use JagdishJP\BilldeskHmac\Exceptions\SignatureVerificationException;
 
 trait Encryption
 {
-
-    public function encryptAndSign($payload, $headers = array())
+    public function encryptAndSign($payload, $headers = [])
     {
-        $jweHeaders = array_merge($headers, array(
-            'alg' => 'HS256'
-        ));
+        $jweHeaders = array_merge($headers, [
+            'alg' => 'HS256',
+        ]);
 
         $jws = $this->jwsBuilder
             ->create()
@@ -26,8 +25,8 @@ trait Encryption
     {
         $jws = $this->jwsSerializer->unserialize($token);
 
-        if (!$this->jwsVerifier->verifyWithKey($jws, $this->clientJwk, 0)) {
-            throw new SignatureVerificationException("Failed to verify signature");
+        if (! $this->jwsVerifier->verifyWithKey($jws, $this->clientJwk, 0)) {
+            throw new SignatureVerificationException('Failed to verify signature');
         }
 
         return json_decode($jws->getPayload());

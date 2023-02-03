@@ -52,7 +52,7 @@ class InvoiceGet extends Message implements Contract
         ])->validate();
 
         $this->reference = $data['invoice_number'];
-        $response = $this->api($this->url, $this->format());
+        $response        = $this->api($this->url, $this->format());
 
         $this->response = $response->getResponse();
 
@@ -62,17 +62,16 @@ class InvoiceGet extends Message implements Contract
             throw new Exception($this->response->message);
         }
 
-        $this->transaction_id     = $this->response->invoice_id ?? null;
+        $this->transaction_id     = $this->response->invoice_id              ?? null;
         $this->transactionStatus  = $this->response->verification_error_type ?? null;
         $this->saveTransaction();
 
         if ($this->transactionStatus == self::STATUS_SUCCESS_CODE) {
-
             return [
                 'status'                => self::STATUS_SUCCESS,
                 'message'               => $this->response->verification_error_desc,
                 'transaction_response'  => $this->response,
-                'invoice_id'            => $this->transaction_id ?? null,
+                'invoice_id'            => $this->transaction_id   ?? null,
                 'invoice_status'        => $this->response->status ?? null,
             ];
         }
@@ -85,7 +84,6 @@ class InvoiceGet extends Message implements Contract
             'invoice_status'        => self::STATUS_FAILED,
         ];
     }
-
 
     /**
      * returns collection of all fields.
@@ -117,11 +115,11 @@ class InvoiceGet extends Message implements Contract
      */
     public function saveTransaction()
     {
-        $transaction = Transaction::where('request_type', 'invoice')->where(['reference_id' => $this->reference])->firstOrNew();
+        $transaction = Transaction::where('request_type', 'invoice')->where(['orderid' => $this->reference])->firstOrNew();
 
         $transaction->request_type       = 'invoice';
         $transaction->unique_id          = $this->id;
-        $transaction->reference_id       = $this->reference;
+        $transaction->orderid            = $this->reference;
         $transaction->transaction_id     = $this->transaction_id;
         $transaction->transaction_status = $this->transactionStatus;
         $transaction->request_payload    = $this->list()->toJson();

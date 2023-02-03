@@ -48,30 +48,29 @@ class TransactionCreate extends Message implements Contract
      */
     public function handle($options)
     {
-
         $data = Validator::make($options, [
-            "reference_id" => 'required',
-            "amount" => 'required',
-            "mandateid" => 'required',
-            "subscription_refid" => 'required',
-            "invoice_id" => 'required',
-            "debit_request_no" => 'required',
-            "additional_info" => 'nullable',
-            "itemcode" => 'nullable',
-            "customer" => 'nullable',
+            'orderid'            => 'required',
+            'amount'             => 'required',
+            'mandateid'          => 'required',
+            'subscription_refid' => 'required',
+            'invoice_id'         => 'required',
+            'debit_request_no'   => 'required',
+            'additional_info'    => 'nullable',
+            'itemcode'           => 'nullable',
+            'customer'           => 'nullable',
         ])->validate();
 
-        $this->mandate = new stdClass;
-        $this->invoice = new stdClass;
-        $this->reference = $data['reference_id'];
-        $this->amount = $data['amount'];
-        $this->mandate->id = $data['mandateid'];
+        $this->mandate                     = new stdClass();
+        $this->invoice                     = new stdClass();
+        $this->reference                   = $data['orderid'];
+        $this->amount                      = $data['amount'];
+        $this->mandate->id                 = $data['mandateid'];
         $this->mandate->subscription_refid = $data['subscription_refid'];
-        $this->invoice->id = $data['invoice_id'];
-        $this->invoice->debit_request_no = $data['debit_request_no'];
-        $this->additionalInfo = $data['additional_info'] ?? null;
-        $this->item_code = $data['itemcode'] ?? $this->item_code;
-        $this->customer = $data['customer'] ?? null;
+        $this->invoice->id                 = $data['invoice_id'];
+        $this->invoice->debit_request_no   = $data['debit_request_no'];
+        $this->additionalInfo              = $data['additional_info'] ?? null;
+        $this->item_code                   = $data['itemcode']        ?? $this->item_code;
+        $this->customer                    = $data['customer']        ?? null;
 
         $response = $this->api($this->url, $this->format());
 
@@ -83,17 +82,16 @@ class TransactionCreate extends Message implements Contract
             throw new Exception($this->response->message);
         }
 
-        $this->transaction_id     = $this->response->invoice_id ?? null;
+        $this->transaction_id     = $this->response->invoice_id              ?? null;
         $this->transactionStatus  = $this->response->verification_error_type ?? null;
         $this->saveTransaction();
 
         if ($this->transactionStatus == self::STATUS_SUCCESS_CODE) {
-
             return [
                 'status'                => self::STATUS_SUCCESS,
                 'message'               => $this->response->verification_error_desc,
                 'transaction_response'  => $this->response,
-                'invoice_id'            => $this->transaction_id ?? null,
+                'invoice_id'            => $this->transaction_id   ?? null,
                 'invoice_status'        => $this->response->status ?? null,
             ];
         }
@@ -107,7 +105,6 @@ class TransactionCreate extends Message implements Contract
         ];
     }
 
-
     /**
      * returns collection of all fields.
      *
@@ -115,20 +112,19 @@ class TransactionCreate extends Message implements Contract
      */
     public function list()
     {
-
-        return  collect([
-            'mercid' => $this->merchantId,
-            'currency' => $this->currency,
-            'orderid' => $this->reference,
-            'amount' => $this->amount,
-            'mandateid' => $this->mandate->id,
+        return collect([
+            'mercid'             => $this->merchantId,
+            'currency'           => $this->currency,
+            'orderid'            => $this->reference,
+            'amount'             => $this->amount,
+            'mandateid'          => $this->mandate->id,
             'subscription_refid' => $this->mandate->subscription_refid,
-            'invoice_id' => $this->invoice->id,
-            'debit_request_no' => $this->invoice->debit_request_no,
-            'additionalInfo' => $this->additionalInfo,
-            'itemcode' => $this->item_code,
-            'customer' => $this->customer,
-            'txn_process_type' => 'si',
+            'invoice_id'         => $this->invoice->id,
+            'debit_request_no'   => $this->invoice->debit_request_no,
+            'additionalInfo'     => $this->additionalInfo,
+            'itemcode'           => $this->item_code,
+            'customer'           => $this->customer,
+            'txn_process_type'   => 'si',
         ]);
     }
 
@@ -149,10 +145,10 @@ class TransactionCreate extends Message implements Contract
      */
     public function saveTransaction()
     {
-        $transaction = Transaction::where('request_type', 'invoice_transaction')->where(['reference_id' => $this->invoice->id])->firstOrNew();
+        $transaction = Transaction::where('request_type', 'invoice_transaction')->where(['orderid' => $this->invoice->id])->firstOrNew();
 
         $transaction->request_type       = 'invoice_transaction';
-        $transaction->reference_id       = $this->invoice->id;
+        $transaction->orderid            = $this->invoice->id;
         $transaction->unique_id          = $this->id;
         $transaction->transaction_id     = $this->transaction_id;
         $transaction->transaction_status = $this->transactionStatus;

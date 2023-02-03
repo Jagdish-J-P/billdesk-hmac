@@ -16,7 +16,7 @@ class TransactionStatus extends Command
      *
      * @var string
      */
-    protected $signature = 'billdesk:transaction-status {--reference_id=* : Order Reference Id}';
+    protected $signature = 'billdesk:transaction-status {--orderid=* : Order Reference Id}';
 
     /**
      * The console command description.
@@ -42,32 +42,33 @@ class TransactionStatus extends Command
      */
     public function handle()
     {
+        $orderids = $this->option('orderid');
 
-        $reference_ids = $this->option('reference_id');
-
-        if (!empty($reference_ids)) {
-            $reference_ids = Transaction::whereIn('reference_id', $reference_ids)->get('reference_id')->toArray();
-        } else {
-            $reference_ids = Transaction::whereNull('transaction_status')
+        if (! empty($orderids)) {
+            $orderids = Transaction::whereIn('orderid', $orderids)->get('orderid')->toArray();
+        }
+        else {
+            $orderids = Transaction::whereNull('transaction_status')
                 ->orWhere('transaction_status', MessagesTransactionStatus::STATUS_PENDING_CODE)
-                ->get('reference_id')->toArray();
+                ->get('orderid')->toArray();
         }
 
-        if ($reference_ids) {
+        if ($orderids) {
             try {
-                $bar = $this->output->createProgressBar(count($reference_ids));
+                $bar = $this->output->createProgressBar(count($orderids));
                 $bar->start();
-                foreach ($reference_ids as $key => $row) {
+                foreach ($orderids as $key => $row) {
                     try {
-                        $status[] = BilldeskHmac::getTransactionStatus($row['reference_id']);
-                        logger('Transaction Status: reference_id-' . $row['reference_id'], $status[$key]);
-                    } catch (Exception $e) {
-                        $status[$key]['status'] = 'error';
-                        $status[$key]['message'] = $e->getMessage();
+                        $status[] = BilldeskHmac::getTransactionStatus($row['orderid']);
+                        logger('Transaction Status: orderid-' . $row['orderid'], $status[$key]);
+                    }
+                    catch (Exception $e) {
+                        $status[$key]['status']               = 'error';
+                        $status[$key]['message']              = $e->getMessage();
                         $status[$key]['transaction_response'] = '-';
-                        $status[$key]['reference_id'] = '-';
-                        $status[$key]['transaction_id'] = '-';
-                        $status[$key]['transaction_date'] = '-';
+                        $status[$key]['orderid']              = '-';
+                        $status[$key]['transaction_id']       = '-';
+                        $status[$key]['transaction_date']     = '-';
                     }
                     $bar->advance();
                 }
@@ -78,14 +79,16 @@ class TransactionStatus extends Command
 
                 $this->table(collect(Arr::first($status))->keys()->toArray(), $this->stringify($status));
                 $this->newLine();
-                $this->info("Please see log for detailed info.");
-            } catch (Exception $e) {
+                $this->info('Please see log for detailed info.');
+            }
+            catch (Exception $e) {
                 $this->error($e->getMessage());
                 logger('Transaction Status', [
                     'message' => $e->getMessage(),
                 ]);
             }
-        } else {
+        }
+        else {
             $this->error('There is no Pending transactions.');
             logger('Transaction Status', [
                 'message' => 'There is no Pending transactions.',
@@ -104,6 +107,7 @@ class TransactionStatus extends Command
         }
 
         unset($temp);
+
         return $resultArray;
     }
 }

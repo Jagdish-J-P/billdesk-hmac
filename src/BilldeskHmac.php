@@ -8,7 +8,6 @@ use JagdishJP\BilldeskHmac\Messages\InvoiceGet;
 use JagdishJP\BilldeskHmac\Messages\MandateDelete;
 use JagdishJP\BilldeskHmac\Messages\MandateList;
 use JagdishJP\BilldeskHmac\Messages\MandateModify;
-use JagdishJP\BilldeskHmac\Messages\MandateTokenCreate;
 use JagdishJP\BilldeskHmac\Messages\RefundEnquiry;
 use JagdishJP\BilldeskHmac\Messages\RefundOrder;
 use JagdishJP\BilldeskHmac\Messages\TransactionCreate;
@@ -19,7 +18,7 @@ class BilldeskHmac
     /**
      * Creates Order.
      *
-     * @param array $payload 
+     * @param array $payload
      *
      * @return array
      */
@@ -27,23 +26,23 @@ class BilldeskHmac
     {
         return (new CreateOrder())->handle($payload);
     }
-    
+
     /**
      * Returns status of transaction.
      *
-     * @param string $reference_id reference order id
+     * @param string $orderid reference order id
      *
      * @return array
      */
-    public static function getTransactionStatus(string $reference_id)
+    public static function getTransactionStatus(string $orderid)
     {
-        return (new TransactionStatus())->handle(compact('reference_id'));
+        return (new TransactionStatus())->handle(compact('orderid'));
     }
 
     /**
      * Refund Order.
      *
-     * @param array $payload 
+     * @param array $payload
      *
      * @return array
      */
@@ -55,7 +54,7 @@ class BilldeskHmac
     /**
      * Refund Order Status.
      *
-     * @param array $payload 
+     * @param array $payload
      *
      * @return array
      */
@@ -67,7 +66,7 @@ class BilldeskHmac
     /**
      * Returns list of mandates.
      *
-     * @param array $parameters 
+     * @param array $parameters
      *
      * @return array
      */
@@ -79,7 +78,7 @@ class BilldeskHmac
     /**
      * Returns list of mandates.
      *
-     * @param array $parameters 
+     * @param array $parameters
      *
      * @return array
      */
@@ -95,7 +94,7 @@ class BilldeskHmac
     /**
      * Returns list of mandates.
      *
-     * @param array $parameters 
+     * @param array $parameters
      *
      * @return array
      */
@@ -111,7 +110,7 @@ class BilldeskHmac
     /**
      * Creates Invoice.
      *
-     * @param array $payload 
+     * @param array $payload
      *
      * @return array
      */
@@ -123,7 +122,8 @@ class BilldeskHmac
     /**
      * Get Invoice.
      *
-     * @param array $payload 
+     * @param array $payload
+     * @param string $invoice_number
      *
      * @return array
      */
@@ -132,11 +132,10 @@ class BilldeskHmac
         return (new InvoiceGet())->handle(compact('invoice_number'));
     }
 
-    
     /**
      * Creates Transaction for Invoice.
      *
-     * @param array $payload 
+     * @param array $payload
      *
      * @return array
      */
@@ -148,7 +147,8 @@ class BilldeskHmac
     /**
      * Refund Order Status.
      *
-     * @param array $payload 
+     * @param array $payload
+     * @param string $response
      *
      * @return array
      */

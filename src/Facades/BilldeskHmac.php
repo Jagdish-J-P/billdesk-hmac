@@ -9,5 +9,5 @@ class BilldeskHmac extends Facade
     protected static function getFacadeAccessor()
     {
         return 'billdeskhmac';
-    }    
+    }
 }

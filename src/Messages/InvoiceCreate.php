@@ -47,27 +47,26 @@ class InvoiceCreate extends Message implements Contract
      */
     public function handle($options)
     {
-
         $data = Validator::make($options, [
-            "subscription_refid" => 'required',
-            "customer_refid" => 'required',
-            "additional_info" => 'nullable',
-            "invoice_number" => 'required',
-            "invoice_display_number" => 'required',
-            "invoice_date" => 'required',
-            "duedate" => 'required',
-            "debit_date" => 'required',
-            "amount" => 'required',
-            "subscriptionid" => 'nullable',
-            "debit_request_no" => 'nullable',
-            "early_payment_duedate" => 'nullable',
-            "early_payment_discount" => 'nullable',
-            "early_payment_amount" => 'nullable',
-            "late_payment_charges" => 'nullable',
-            "late_payment_amount" => 'nullable',
-            "net_amount" => 'required',
-            "mandateid" => 'required',
-            "description" => 'required',
+            'subscription_refid'     => 'required',
+            'customer_refid'         => 'required',
+            'additional_info'        => 'nullable',
+            'invoice_number'         => 'required',
+            'invoice_display_number' => 'required',
+            'invoice_date'           => 'required',
+            'duedate'                => 'required',
+            'debit_date'             => 'required',
+            'amount'                 => 'required',
+            'subscriptionid'         => 'nullable',
+            'debit_request_no'       => 'nullable',
+            'early_payment_duedate'  => 'nullable',
+            'early_payment_discount' => 'nullable',
+            'early_payment_amount'   => 'nullable',
+            'late_payment_charges'   => 'nullable',
+            'late_payment_amount'    => 'nullable',
+            'net_amount'             => 'required',
+            'mandateid'              => 'required',
+            'description'            => 'required',
         ])->validate();
 
         $this->invoice = $data;
@@ -82,17 +81,16 @@ class InvoiceCreate extends Message implements Contract
             throw new Exception($this->response->message);
         }
 
-        $this->transaction_id     = $this->response->invoice_id ?? null;
+        $this->transaction_id     = $this->response->invoice_id              ?? null;
         $this->transactionStatus  = $this->response->verification_error_type ?? null;
         $this->saveTransaction();
 
         if ($this->transactionStatus == self::STATUS_SUCCESS_CODE) {
-
             return [
                 'status'                => self::STATUS_SUCCESS,
                 'message'               => $this->response->verification_error_desc,
                 'transaction_response'  => $this->response,
-                'invoice_id'            => $this->transaction_id ?? null,
+                'invoice_id'            => $this->transaction_id   ?? null,
                 'invoice_status'        => $this->response->status ?? null,
             ];
         }
@@ -106,7 +104,6 @@ class InvoiceCreate extends Message implements Contract
         ];
     }
 
-
     /**
      * returns collection of all fields.
      *
@@ -114,7 +111,6 @@ class InvoiceCreate extends Message implements Contract
      */
     public function list()
     {
-        
         $this->invoice['mercid']    = $this->merchantId;
         $this->invoice['currency']  = $this->currency;
 
@@ -138,10 +134,10 @@ class InvoiceCreate extends Message implements Contract
      */
     public function saveTransaction()
     {
-        $transaction = Transaction::where('request_type', 'invoice')->where(['reference_id' => $this->invoice['invoice_number']])->firstOrNew();
+        $transaction = Transaction::where('request_type', 'invoice')->where(['orderid' => $this->invoice['invoice_number']])->firstOrNew();
 
         $transaction->request_type       = 'invoice';
-        $transaction->reference_id       = $this->invoice['invoice_number'];
+        $transaction->orderid            = $this->invoice['invoice_number'];
         $transaction->unique_id          = $this->id;
         $transaction->transaction_id     = $this->transaction_id;
         $transaction->transaction_status = $this->transactionStatus;

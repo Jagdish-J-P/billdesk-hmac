@@ -119,7 +119,7 @@ php artisan billdesk:transaction-status
 4. Check Status of specific transaction using command pass comma saperated order reference ids.
 
 ```bash
-php artisan billdesk:transaction-status --reference_id=reference_id1 --reference_id=reference_id2 --reference_id=reference_id3
+php artisan billdesk:transaction-status --orderid=orderid1 --orderid=orderid2 --orderid=orderid3
 ```
 
 5. Check transaction status from Controller
@@ -131,10 +131,10 @@ use JagdishJP\BilldeskHmac\Facades\BilldeskHmac;
 /**
  * Returns status of transaction
  * 
- * @param string $reference_id reference order id
+ * @param string $orderid reference order id
  * @return array
  */
-$status = BilldeskHmac::getTransactionStatus($reference_id);
+$status = BilldeskHmac::getTransactionStatus($orderid);
 ```
 
 You can also override `payment.blade.php` with your custom design to integrate with your layout. but do not change `name` attribute of html controls and `action` URL of form.

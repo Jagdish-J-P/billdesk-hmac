@@ -28,6 +28,5 @@ class AddRequestTypeToTransactionsTable extends Migration
         Schema::table('transactions', function (Blueprint $table) {
             $table->dropColumn('request_type');
         });
-        
     }
 }
