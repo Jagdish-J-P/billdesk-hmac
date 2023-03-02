@@ -68,7 +68,7 @@ class TransactionCreate extends Message implements Contract
         $this->mandate->subscription_refid = $data['subscription_refid'];
         $this->invoice->id                 = $data['invoice_id'];
         $this->invoice->debit_request_no   = $data['debit_request_no'];
-        $this->additionalInfo              = $data['additional_info'] ?? null;
+        $this->additionalInfo              = $data['additional_info'] ?? [];
         $this->item_code                   = $data['itemcode']        ?? $this->item_code;
         $this->customer                    = $data['customer']        ?? null;
 
@@ -120,10 +120,10 @@ class TransactionCreate extends Message implements Contract
             'mandateid'          => $this->mandate->id,
             'subscription_refid' => $this->mandate->subscription_refid,
             'invoice_id'         => $this->invoice->id,
-            'debit_request_no'   => $this->invoice->debit_request_no,
+            /* 'debit_request_no'   => $this->invoice->debit_request_no, */
             'additionalInfo'     => $this->additionalInfo,
+            /* 'customer'           => $this->customer, */
             'itemcode'           => $this->item_code,
-            'customer'           => $this->customer,
             'txn_process_type'   => 'si',
         ]);
     }
