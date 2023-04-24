@@ -60,8 +60,8 @@ class RefundOrder extends Message implements Contract
         $this->refundReference      = $data['merc_refund_ref_no'] ?? uniqid('rfnd-');
         $this->reference            = $data['orderid'];
         $this->transaction_id       = $data['transaction_id'];
-        $this->amount               = number_format($data['txn_amount'], 2);
-        $this->refundAmount         = number_format($data['refund_amount'], 2);
+        $this->amount               = $this->numberFormat($data['txn_amount'], 2);
+        $this->refundAmount         = $this->numberFormat($data['refund_amount'], 2);
         $this->transaction_date     = Carbon::parse($data['transaction_date'])->format(config('billdesk.date_format'));
 
         $this->payload              = $this->format();

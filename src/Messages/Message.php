@@ -248,4 +248,8 @@ class Message
     {
         return collect($response->links)->filter(fn ($arr) => $arr->method == $method)->first();
     }
+
+    public function numberFormat($amount, $decimals) {
+        return number_format($amount, $decimals, '.', '');
+    }
 }

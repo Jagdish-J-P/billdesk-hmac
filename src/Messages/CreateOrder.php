@@ -55,7 +55,7 @@ class CreateOrder extends Message implements Contract
 
         $data['mandate']['mercid']              = $this->merchantId;
         $data['mandate']['currency']            = $this->currency;
-        $data['mandate']['amount']              = number_format($data['mandate']['amount'], 2);
+        $data['mandate']['amount']              = $this->numberFormat($data['mandate']['amount'], 2);
         $data['mandate']['subscription_refid']  = $data['subscription_refid'] ?? null;
         $data['mandate']['customer_refid']      = $data['customer_refid']     ?? null;
         $data['mandate']['debit_day']           = $data['debit_day']          ?? $this->debit_day;
@@ -63,7 +63,7 @@ class CreateOrder extends Message implements Contract
 
         $this->responseFormat       = $data['response_format'] ?? 'HTML';
         $this->reference            = $data['orderid']         ?? $this->generate_uuid();
-        $this->amount               = number_format($data['amount'], 2);
+        $this->amount               = $this->numberFormat($data['amount'], 2);
         $this->order_date           = $data['order_date'] ?? now()->format($this->date_format);
         $this->additionalInfo       = collect($data['additional_info'] ?? [])->filter(fn ($val) => ! empty($val))->toArray();
         $this->mandate              = $data['mandate_required'] == 'Y' ? ($data['mandate'] ?? null) : null;
