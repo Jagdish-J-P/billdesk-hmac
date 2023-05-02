@@ -36,7 +36,7 @@ class MandateModifyResponse extends Message implements Contract
         try {
             $this->response          = @$options['mandate_response'] ?? @$options['encrypted_response'];
             $this->responseValues    = $this->verifyAndDecrypt($this->response);
-            Log::channel('daily')->debug('billdesk-response', ['response' => $this->responseValues]);
+            Log::channel('daily')->debug('billdesk-mandate-modify-response', ['response' => $this->responseValues]);
 
             if (isset($this->responseValues->verification_error_type) && $this->responseValues->verification_error_type == self::STATUS_SUCCESS_CODE) {
                 $this->id                   = @$options['id'];

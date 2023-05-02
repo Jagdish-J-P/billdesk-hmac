@@ -36,7 +36,7 @@ class TransactionConfirmation extends Message implements Contract
         try {
             $this->response          = @$options['transaction_response'] ?? @$options['encrypted_response'];
             $this->responseValues    = $this->verifyAndDecrypt($this->response);
-            Log::channel('daily')->debug('billdesk-response', ['response' => $this->responseValues]);
+            Log::channel('daily')->debug('billdesk-transaction-confirmation-response', ['response' => $this->responseValues]);
 
             if (isset($this->responseValues->orderid)) {
                 $this->id                   = @$options['id'];

@@ -81,6 +81,7 @@ class CreateOrder extends Message implements Contract
         try {
             $response     = $this->api($this->url, $this->payload);
             $responseBody = $response->getResponse();
+            Log::channel('daily')->debug('create-order-response', ['payload' => $responseBody]);
 
             if ($response->getResponseStatus() != 200) {
                 throw new Exception($responseBody->message);

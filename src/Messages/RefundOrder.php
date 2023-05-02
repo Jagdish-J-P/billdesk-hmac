@@ -72,7 +72,9 @@ class RefundOrder extends Message implements Contract
             $response       = $this->api($this->url, $this->payload);
             $this->response = $response->getResponse();
             $this->saveTransaction();
-
+            
+            Log::channel('daily')->debug('mandate-token-create-response', ['response' => $this->response]);
+            
             if ($response->getResponseStatus() != 200) {
                 throw new Exception($this->response->message);
             }

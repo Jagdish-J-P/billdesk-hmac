@@ -52,8 +52,8 @@ class MandateDelete extends Message implements Contract
 
         $this->response = $response->getResponse();
 
+        Log::channel('daily')->debug('mandate-delete-response', ['response' => $this->response]);
         if ($response->getResponseStatus() != 200) {
-            Log::channel('daily')->debug('mandate-delete-response', ['response' => $this->response]);
 
             throw new Exception($this->response->message);
         }

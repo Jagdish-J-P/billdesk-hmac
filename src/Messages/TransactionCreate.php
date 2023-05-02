@@ -76,8 +76,8 @@ class TransactionCreate extends Message implements Contract
 
         $this->response = $response->getResponse();
 
+        Log::channel('daily')->debug('billdesk-transaction-create-response', ['response' => $this->response]);
         if ($response->getResponseStatus() != 200) {
-            Log::channel('daily')->debug('billdesk-invoice-create-response', ['response' => $this->response]);
 
             throw new Exception($this->response->message);
         }

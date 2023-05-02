@@ -74,9 +74,9 @@ class InvoiceCreate extends Message implements Contract
         $response = $this->api($this->url, $this->format());
 
         $this->response = $response->getResponse();
-
+        
+        Log::channel('daily')->debug('billdesk-invoice-create-response', ['response' => $this->response]);
         if ($response->getResponseStatus() != 200) {
-            Log::channel('daily')->debug('billdesk-invoice-create-response', ['response' => $this->response]);
 
             throw new Exception($this->response->message);
         }

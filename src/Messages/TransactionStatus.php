@@ -59,8 +59,8 @@ class TransactionStatus extends Message implements Contract
 
         $this->response = $response->getResponse();
 
+        Log::channel('daily')->debug('billdesk-transaction-status-response', ['response' => $this->response]);
         if ($response->getResponseStatus() != 200) {
-            Log::channel('daily')->debug('billdesk-status-response', ['response' => $this->response]);
 
             throw new Exception($this->response->message);
         }

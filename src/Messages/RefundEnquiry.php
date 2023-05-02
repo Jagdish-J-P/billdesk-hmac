@@ -66,6 +66,7 @@ class RefundEnquiry extends Message implements Contract
             $this->transactionStatus = $this->response->refund_status;
 
             $this->saveTransaction();
+            Log::channel('daily')->debug('refund-enquiry-response', ['response' => $this->response]);
 
             if ($response->getResponseStatus() != 200) {
                 throw new Exception($this->response->message);
