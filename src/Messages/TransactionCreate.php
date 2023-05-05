@@ -2,6 +2,7 @@
 
 namespace JagdishJP\BilldeskHmac\Messages;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
@@ -23,7 +24,7 @@ class TransactionCreate extends Message implements Contract
 
     public const STATUS_PENDING = 'Pending';
 
-    public const STATUS_SUCCESS_CODE = 'success';
+    public const STATUS_SUCCESS_CODE = '0300';
 
     public const STATUS_PENDING_CODE = '0002';
 
@@ -82,26 +83,29 @@ class TransactionCreate extends Message implements Contract
             throw new Exception($this->response->message);
         }
 
-        $this->transaction_id     = $this->response->invoice_id              ?? null;
-        $this->transactionStatus  = $this->response->verification_error_type ?? null;
+        $this->transaction_id     = $this->response->transactionid  ?? null;
+        $this->transactionStatus  = $this->response->auth_status ?? null;
+        $this->transaction_date   = Carbon::parse($this->response->transaction_date);
         $this->saveTransaction();
 
         if ($this->transactionStatus == self::STATUS_SUCCESS_CODE) {
             return [
                 'status'                => self::STATUS_SUCCESS,
-                'message'               => $this->response->verification_error_desc,
+                'message'               => $this->response->transaction_error_desc,
                 'transaction_response'  => $this->response,
-                'invoice_id'            => $this->transaction_id   ?? null,
-                'invoice_status'        => $this->response->status ?? null,
+                'transaction_id'        => $this->transaction_id   ?? null,
+                'transaction_status'    => $this->response->status ?? null,
+                'transaction_date'      => $this->transaction_date ?? null,
             ];
         }
 
         return [
             'status'                => self::STATUS_FAILED,
-            'message'               => $this->response->verification_error_desc,
+            'message'               => $this->response->transaction_error_desc,
             'transaction_response'  => $this->response,
-            'invoice_id'            => $this->transaction_id ?? null,
-            'invoice_status'        => self::STATUS_FAILED,
+            'transaction_id'        => $this->transaction_id ?? null,
+            'transaction_status'    => self::STATUS_FAILED,
+            'transaction_date'      => $this->transaction_date ?? null,
         ];
     }
 
