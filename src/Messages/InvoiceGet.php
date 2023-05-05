@@ -22,7 +22,7 @@ class InvoiceGet extends Message implements Contract
 
     public const STATUS_PENDING = 'Pending';
 
-    public const STATUS_SUCCESS_CODE = 'success';
+    public const STATUS_SUCCESS_CODE = 'unpaid';
 
     public const STATUS_PENDING_CODE = '0002';
 
@@ -62,8 +62,8 @@ class InvoiceGet extends Message implements Contract
             throw new Exception($this->response->message);
         }
 
-        $this->transaction_id     = $this->response->invoice_id              ?? null;
-        $this->transactionStatus  = $this->response->verification_error_type ?? null;
+        $this->transaction_id     = $this->response->invoice_id ?? null;
+        $this->transactionStatus  = $this->response->status     ?? null;
         $this->saveTransaction();
 
         if ($this->transactionStatus == self::STATUS_SUCCESS_CODE) {
@@ -81,7 +81,7 @@ class InvoiceGet extends Message implements Contract
             'message'               => $this->response->verification_error_desc,
             'transaction_response'  => $this->response,
             'invoice_id'            => $this->transaction_id ?? null,
-            'invoice_status'        => self::STATUS_FAILED,
+            'invoice_status'        => $this->response->status ?? null,
         ];
     }
 
