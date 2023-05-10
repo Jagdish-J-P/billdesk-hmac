@@ -151,11 +151,11 @@ class Message
     {
         $this->id           = $this->generate_uuid();
 
-        $this->merchantId   = Config::get('billdesk.merchant_id');
-        $this->clientId     = Config::get('billdesk.client_id');
-        $this->hmacKey      = Config::get('billdesk.hmac_key');
-        $this->uatPrefix    = Config::get('billdesk.uat_prefix');
-        $this->currency     = Config::get('billdesk.currency');
+        $this->merchantId   = config('billdesk.merchant_id');
+        $this->clientId     = config('billdesk.client_id');
+        $this->hmacKey      = config('billdesk.hmac_key');
+        $this->uatPrefix    = app()->isLocal() ? config('billdesk.uat_prefix') : '';
+        $this->currency     = config('billdesk.currency');
 
         $this->signAlgoManager = new AlgorithmManager([
             new HS256(),
