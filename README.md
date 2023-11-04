@@ -3,7 +3,13 @@
  Repository has been developed to integrate BillDesk Payment Gateway with HMAC Encryption in Laravel.
  
  This repository is currently in development. There might be some exception.
- 
+
+## Become a sponsor
+
+[![](.github/assets/support.png)](https://github.com/sponsors/Jagdish-J-P)
+
+Your support allows me to keep this package free, up-to-date and maintainable. Alternatively, you can **[spread the word!](http://twitter.com/share?text=I+am+using+this+cool+PHP+package&url=https://github.com/jagdish-j-p/billdesk-hmac&hashtags=PHP,Laravel,BillDesk)**
+
 ## Installation
 
 You can install the package via composer:
